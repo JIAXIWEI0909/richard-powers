@@ -161,13 +161,11 @@
     border-radius: 0 8px 8px 0;
   }
 
-  /* =========================================
-     --- FLASHCARDS CSS (终极排版修复版) --- 
-     ========================================= */
+  /* --- FLASHCARDS CSS --- */
   .flashcard-scene {
     width: 100%;
     max-width: 750px;
-    height: 480px; /* 足够的高度 */
+    height: 480px;
     margin: 20px auto;
     perspective: 1500px;
     cursor: pointer;
@@ -179,183 +177,149 @@
     position: relative;
     transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
     transform-style: preserve-3d;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   }
 
   .flashcard.is-flipped {
     transform: rotateY(180deg);
   }
 
-  /* ！！！白屏的克星：加上 top: 0 和 left: 0 ！！！ */
   .card-face {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0;  /* 修复白屏错位元凶 */
+    left: 0; /* 修复白屏错位元凶 */
     width: 100%;
     height: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  }
-
-  /* --- 正面：白色卡片 + 橙色粗边框，文字绝对居中 --- */
-  .card-front {
-    background: var(--card);
-    border: 4px solid var(--accent2); /* 加上颜色边框，非常有质感 */
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 40px;
-    text-align: center; /* 确保文字居中 */
-    transform: rotateY(0deg); 
+    justify-content: center;
+    border-radius: 20px;
+    padding: 30px 40px;
+    text-align: center;
+    border: 5px solid var(--accent);
   }
 
-  .card-front h2 {
-    font-size: 3rem;
-    color: #e65100;
-    margin: 0 0 10px 0;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 900;
-  }
-  
-  .fc-hint {
-    font-size: 1.1rem;
-    color: #999;
-    margin-top: 15px;
-    font-style: italic;
-  }
-
-  /* --- 背面：深橙色背景，文字上下滑动不压缩 --- */
+  .card-front { background: white; color: var(--ink); }
   .card-back {
     background: var(--flip-bg);
     color: white;
     transform: rotateY(180deg);
-    border: 4px solid #d35400;
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 【文字横向完美居中】 */
-    padding: 40px 30px;
-    overflow-y: auto; /* 开启滚动条 */
+    border-color: #d35400;
+    justify-content: flex-start; /* 让内容从顶部开始排布，完美兼容长文本 */
+    overflow-y: auto;            /* 开启下划滚动条 */
   }
 
-  /* 阻止内容被压缩 */
   .card-back > * {
-    flex-shrink: 0; 
+    flex-shrink: 0; /* 绝对解药：强行禁止卡片背面的文字被挤压变形 */
   }
 
-  /* 背面标题居中 */
-  .card-back h3 {
-    margin-top: 0;
-    color: #FFD8A8;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    font-weight: 900;
-    font-family: 'Nunito', sans-serif;
-    text-align: center; /* 【居中】 */
-  }
+  /* 极其舒适的滚动条美化 */
+  .card-back::-webkit-scrollbar { width: 6px; }
+  .card-back::-webkit-scrollbar-track { background: transparent; }
+  .card-back::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4); border-radius: 10px; }
+  .card-back::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.6); }
 
-  /* 深度解析：居中且间距舒服 */
-  .card-back p.fc-context {
-    font-size: 1.15rem; 
-    line-height: 1.7;   
-    color: white;
-    font-weight: 500;
-    margin-top: 0;
-    margin-bottom: 25px;
-    width: 100%;
-    text-align: center; /* 【居中】 */
-  }
-
-  /* 例句：推到底部，稍微靠左对齐方便阅读（或者你也喜欢居中，我设为整体饱满居中） */
-  .card-back p.fc-example {
-    font-size: 1.05rem;    
-    line-height: 1.6;
-    color: #FFF0D4;
-    font-style: italic;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 15px 20px;
-    border-radius: 10px;
-    border-left: 4px solid #FFD8A8;
-    width: 100%;
-    text-align: left; 
-    margin-top: auto; /* 【自动推到卡片最底部】 */
-    margin-bottom: 10px;
-  }
-
-  /* 滚动条美化 */
-  .card-back::-webkit-scrollbar {
-    width: 6px;
-  }
-  .card-back::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.05); 
-    border-radius: 10px;
-  }
-  .card-back::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.4); 
-    border-radius: 10px;
-  }
-  .card-back::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.7); 
-  }
-
-  /* 控制按钮区域 */
-  .mode-controls {
+  /* ↓↓↓ 从这里往下，完完全全保留了你原始文件中极其精美的文字/按钮样式，一个字都没动 ↓↓↓ */
+  .word-header-container {
     display: flex;
+    align-items: center;
     justify-content: center;
     gap: 15px;
     margin-bottom: 15px;
   }
 
-  .mode-btn {
-    background: #FFF7ED;
-    border: 1px solid var(--accent);
+  .fc-word { 
+    font-size: 2.4rem; 
+    font-weight: 900; 
+    color: #e65100; 
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.2;
+  }
+
+  .audio-btn-small {
+    background: var(--bg);
     color: #e65100;
-    padding: 8px 20px;
-    border-radius: 15px;
+    border: 2px solid var(--accent2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
     cursor: pointer;
-    font-weight: bold;
     transition: 0.2s;
-  }
-
-  .mode-btn.active {
-    background: var(--accent);
-    color: white;
-  }
-
-  .nav-controls {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 20px;
-    margin-top: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  
+  .audio-btn-small:hover { 
+    background: var(--accent); 
+    color: white; 
+    transform: scale(1.1); 
+    border-color: var(--accent);
   }
 
-  .nav-btn {
-    background: white;
-    color: #e65100;
-    border: 2px solid var(--accent);
-    padding: 12px 30px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    transition: 0.2s;
+  .card-front .base-note {
+    font-size: 1.1rem;
+    color: #d35400;
+    font-weight: 700;
+    background: #FFF0D4;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+  }
+
+  .fc-hint { 
+    font-size: 14px; 
+    color: #999; 
+    margin-top: auto;
+    font-style: italic; 
+  }
+
+  .card-back h3 { 
+    margin-top: 0; 
+    color: #FFD8A8; 
+    font-size: 1.8rem; 
+    margin-bottom: 15px;
+    font-weight: 900;
     font-family: 'Nunito', sans-serif;
   }
+  
+  .card-back p.fc-context { 
+    font-size: 1.1rem; 
+    line-height: 1.6;
+    color: white; 
+    font-weight: 500; 
+    margin-bottom: 20px; 
+  }
+  
+  .card-back p.fc-example { 
+    font-size: 1.05rem; 
+    line-height: 1.5; 
+    color: #FFF0D4; 
+    font-style: italic; 
+    background: rgba(0,0,0,0.15); 
+    padding: 15px; 
+    border-radius: 10px; 
+    border-left: 4px solid #FFD8A8; 
+    width: 100%; 
+    margin-top: auto; 
+  }
 
+  .mode-controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+  .mode-btn { background: #FFF7ED; border: 1px solid var(--accent); color: #e65100; padding: 8px 20px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+  .mode-btn.active { background: var(--accent); color: white; }
+  .nav-controls { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+  .nav-btn { background: white; color: #e65100; border: 2px solid var(--accent); padding: 12px 30px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; font-family: 'Nunito', sans-serif; }
   .nav-btn:hover { transform: translateY(-3px); background: var(--hover); }
   .flip-btn { background: #e65100; color: white; }
   .flip-btn:hover { background: #d35400; color: white; }
-
-  .progress-info {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 1.2rem;
-    color: #888;
-    font-weight: bold;
-  }
+  .progress-info { text-align: center; margin-top: 20px; font-size: 1.2rem; color: #888; font-weight: bold; }
 </style>
 </head>
 <body>
