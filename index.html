@@ -187,7 +187,7 @@
     transform: rotateY(180deg);
   }
 
-  /* 通用面：修复 3D 溢出和闪烁问题 */
+  /* 通用面：去掉了害人的 overflow: hidden 修复了白板 bug */
   .card-face {
     position: absolute;
     width: 100%;
@@ -197,7 +197,6 @@
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     border: 4px solid transparent;
-    overflow: hidden; /* 防止内容撑破卡片圆角 */
   }
 
   /* 正面专属样式 */
@@ -208,7 +207,23 @@
     justify-content: center;
     align-items: center;
     padding: 40px;
-    transform: rotateY(0deg); /* 明确声明，避免某些浏览器 bug */
+    text-align: center;
+  }
+
+  /* ✅ 恢复正面被我不小心删掉的文字排版！ */
+  .card-front h2 {
+    font-size: 2.8rem;
+    color: #e65100;
+    margin: 0 0 10px 0;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+  }
+  
+  .fc-hint {
+    font-size: 14px;
+    color: #999;
+    margin-top: 15px;
+    font-style: italic;
   }
 
   /* 背面专属样式：使用真正的解药排版 */
@@ -230,6 +245,16 @@
   /* 核心修复：彻底解决 Flex 布局下文本被压缩的问题 */
   .card-back > * {
     flex-shrink: 0; 
+  }
+
+  /* ✅ 恢复背面标题样式！ */
+  .card-back h3 {
+    margin-top: 0;
+    color: #FFD8A8;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 900;
+    font-family: 'Nunito', sans-serif;
   }
 
   /* 滚动条美化 */
@@ -254,7 +279,7 @@
     line-height: 1.7;   
     color: white;
     font-weight: 500;
-    margin-top: 15px;
+    margin-top: 0;
     margin-bottom: 20px;
     width: 100%;
   }
