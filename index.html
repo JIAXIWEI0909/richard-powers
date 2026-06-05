@@ -185,108 +185,69 @@
     transform: rotateY(180deg);
   }
 
+  /* === 1. 卡片通用底板（彻底删除了害人的 flex 属性） === */
   .card-face {
     position: absolute;
     width: 100%;
     height: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     border-radius: 20px;
-    padding: 30px 40px;
-    text-align: center;
-    border: 5px solid var(--accent);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 4px solid transparent;
   }
 
-  .card-front { background: white; color: var(--ink); }
+  /* === 2. 正面专属样式（保持原来的完美居中） === */
+  .card-front {
+    background: var(--card);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+
+  /* === 3. 背面专属样式（彻底改为区块排版，完美兼容滚动条） === */
   .card-back {
     background: var(--flip-bg);
     color: white;
     transform: rotateY(180deg);
     border-color: #d35400;
+    
+    display: block;      /* 【解药】强制块级排版，拒绝弹性压缩 */
+    overflow-y: auto;    /* 开启上下滚动 */
+    text-align: left;
+    padding: 30px;
   }
 
-  .word-header-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 15px;
+  /* === 4. 滚动条美化 === */
+  .card-back::-webkit-scrollbar {
+    width: 6px;
+  }
+  .card-back::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+  .card-back::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4); 
+    border-radius: 10px;
+  }
+  .card-back::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7); 
   }
 
-  .fc-word { 
-    font-size: 2.4rem; 
-    font-weight: 900; 
-    color: #e65100; 
-    font-family: 'Nunito', sans-serif;
-    line-height: 1.2;
-  }
-
-  .audio-btn-small {
-    background: var(--bg);
-    color: #e65100;
-    border: 2px solid var(--accent2);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  }
-  
-  .audio-btn-small:hover { 
-    background: var(--accent); 
-    color: white; 
-    transform: scale(1.1); 
-    border-color: var(--accent);
-  }
-
-  .card-front .base-note {
-    font-size: 1.1rem;
-    color: #d35400;
-    font-weight: 700;
-    background: #FFF0D4;
-    padding: 5px 15px;
-    border-radius: 20px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-  }
-
-  .fc-hint { 
-    font-size: 14px; 
-    color: #999; 
-    margin-top: auto; 
-    font-style: italic; 
-  }
-
-  .card-back h3 { 
-    margin-top: 0; 
-    color: #FFD8A8; 
-    font-size: 1.8rem; 
-    margin-bottom: 15px; 
-    font-weight: 900;
-    font-family: 'Nunito', sans-serif;
-  }
-  
-.card-back p.fc-context {
-    font-size: 1.05rem; /* 字号极其微调，确保几百字的深度解析也能舒适阅读 */
-    line-height: 1.65;  /* 稍微增大一点行距，减轻长段落的视觉疲劳 */
+  /* === 5. 背面：深度解析文字排版 === */
+  .card-back p.fc-context {
+    font-size: 1.05rem; 
+    line-height: 1.7;   
     color: white;
     font-weight: 500;
-    margin-top: 10px;   /* 顶部留一点呼吸空间 */
+    margin-top: 15px;
     margin-bottom: 20px;
-    flex-shrink: 0;     /* 【核心修复】防止文字过多时，这段文本被弹性盒子异常挤压变形 */
   }
 
+  /* === 6. 背面：例句排版 === */
   .card-back p.fc-example {
-    font-size: 1rem;    /* 例句比解释稍微小一点点，拉开层次感 */
+    font-size: 1rem;    
     line-height: 1.5;
     color: #FFF0D4;
     font-style: italic;
@@ -294,12 +255,9 @@
     padding: 15px;
     border-radius: 10px;
     border-left: 4px solid #FFD8A8;
-    width: 100%;
-    margin-top: 10px;   /* 【核心修复】去掉了 auto，改为固定间距，防止滚动条暴走 */
-    margin-bottom: 15px;/* 底部增加一点留白，当你滚动到最下面时不会觉得贴边太紧 */
-    flex-shrink: 0;     /* 防止例句框被压缩 */
+    margin-top: 0;
+    margin-bottom: 30px; /* 底部留足空间，滑到底才舒服 */
   }
-
   .mode-controls {
     display: flex;
     justify-content: center;
