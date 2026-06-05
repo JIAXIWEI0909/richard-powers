@@ -275,25 +275,29 @@
     font-family: 'Nunito', sans-serif;
   }
   
-  .card-back p.fc-context { 
-    font-size: 1.1rem; 
-    line-height: 1.6; 
-    color: white; 
+.card-back p.fc-context {
+    font-size: 1.05rem; /* 字号极其微调，确保几百字的深度解析也能舒适阅读 */
+    line-height: 1.65;  /* 稍微增大一点行距，减轻长段落的视觉疲劳 */
+    color: white;
     font-weight: 500;
+    margin-top: 10px;   /* 顶部留一点呼吸空间 */
     margin-bottom: 20px;
+    flex-shrink: 0;     /* 【核心修复】防止文字过多时，这段文本被弹性盒子异常挤压变形 */
   }
 
   .card-back p.fc-example {
-    font-size: 1.05rem;
+    font-size: 1rem;    /* 例句比解释稍微小一点点，拉开层次感 */
     line-height: 1.5;
     color: #FFF0D4;
     font-style: italic;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.15);
     padding: 15px;
     border-radius: 10px;
     border-left: 4px solid #FFD8A8;
     width: 100%;
-    margin-top: auto;
+    margin-top: 10px;   /* 【核心修复】去掉了 auto，改为固定间距，防止滚动条暴走 */
+    margin-bottom: 15px;/* 底部增加一点留白，当你滚动到最下面时不会觉得贴边太紧 */
+    flex-shrink: 0;     /* 防止例句框被压缩 */
   }
 
   .mode-controls {
