@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>Richard Powers 阅读工坊 (Ultimate Edition)</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF7ED;
+    --ink: #333;
+    --accent: #FFA94D;
+    --accent2: #FFD8A8;
+    --card: #fff;
+    --hover: #FFF0D4;
+    --flip-bg: #e65100;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Nunito', 'Poppins', 'Georgia', serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding-bottom: 60px;
+    line-height: 1.6;
+  }
+
+  header {
+    padding: 30px 20px;
+    text-align: center;
+    background: #fff0da;
+    border-bottom: 5px solid var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  h1 {
+    margin: 0;
+    font-weight: 900;
+    color: #e65100;
+    font-size: clamp(28px, 5vw, 40px);
+    letter-spacing: 1px;
+  }
+
+  header p {
+    color: #d35400;
+    font-weight: 600;
+    margin-top: 10px;
+    font-size: 1.1rem;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 30px 0;
+  }
+
+  .tab-btn {
+    border: 2px solid var(--accent);
+    padding: 12px 30px;
+    background: #fff;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    color: var(--ink);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .tab-btn:hover { background: var(--hover); transform: translateY(-2px); }
+  
+  .tab-btn.active {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(255, 169, 77, 0.4);
+  }
+
+  .section-content { display: none; animation: fadeIn 0.4s ease-out; }
+  .section-content.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card);
+    border: 2px solid var(--accent2);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--accent2);
+  }
+
+  th, td {
+    padding: 18px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--accent2);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) { background-color: #FFFDF9; }
+  tr:hover { background-color: var(--hover); }
+
+  .num-col {
+    font-weight: 900;
+    color: #888;
+    width: 5%;
+    vertical-align: top;
+  }
+
+  .word-col { 
+    font-weight: 900; 
+    font-size: 1.2rem; 
+    color: #e65100; 
+    width: 25%; 
+    font-family: 'Nunito', sans-serif;
+    vertical-align: top;
+  }
+  
+  .base-verb { 
+    font-size: 0.85rem; 
+    color: white; 
+    background-color: var(--accent); 
+    padding: 3px 10px; 
+    border-radius: 12px; 
+    display: inline-block; 
+    margin-top: 8px; 
+    font-weight: 700;
+  }
+
+  .meaning-col { width: 70%; }
+  .meaning-col strong { color: var(--ink); font-size: 1.15rem; }
+  .meaning-col p.context { margin: 8px 0 12px 0; color: #555; font-size: 1rem; }
+  
+  .meaning-col p.example { 
+    margin: 0; 
+    color: #d35400; 
+    font-size: 0.95rem; 
+    font-style: italic; 
+    background: #FFF7ED; 
+    padding: 10px 15px; 
+    border-left: 4px solid var(--accent2);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* --- FLASHCARDS CSS --- */
+  .flashcard-scene {
+    width: 100%;
+    max-width: 750px;
+    height: 480px;
+    margin: 20px auto;
+    perspective: 1500px;
+    cursor: pointer;
+  }
+
+  .flashcard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  }
+
+  .flashcard.is-flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 30px 40px;
+    text-align: center;
+    border: 5px solid var(--accent);
+  }
+
+  .card-front { background: white; color: var(--ink); }
+  .card-back {
+    background: var(--flip-bg);
+    color: white;
+    transform: rotateY(180deg);
+    border-color: #d35400;
+  }
+
+  .word-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .fc-word { 
+    font-size: 2.4rem; 
+    font-weight: 900; 
+    color: #e65100; 
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.2;
+  }
+
+  .audio-btn-small {
+    background: var(--bg);
+    color: #e65100;
+    border: 2px solid var(--accent2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  
+  .audio-btn-small:hover { 
+    background: var(--accent); 
+    color: white; 
+    transform: scale(1.1); 
+    border-color: var(--accent);
+  }
+
+  .card-front .base-note {
+    font-size: 1.1rem;
+    color: #d35400;
+    font-weight: 700;
+    background: #FFF0D4;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+  }
+
+  .fc-hint { 
+    font-size: 14px; 
+    color: #999; 
+    margin-top: auto; 
+    font-style: italic; 
+  }
+
+  .card-back h3 { 
+    margin-top: 0; 
+    color: #FFD8A8; 
+    font-size: 1.8rem; 
+    margin-bottom: 15px; 
+    font-weight: 900;
+    font-family: 'Nunito', sans-serif;
+  }
+  
+  .card-back p.fc-context { 
+    font-size: 1.1rem; 
+    line-height: 1.6; 
+    color: white; 
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .card-back p.fc-example {
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #FFF0D4;
+    font-style: italic;
+    background: rgba(0,0,0,0.15);
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #FFD8A8;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .mode-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .mode-btn {
+    background: #FFF7ED;
+    border: 1px solid var(--accent);
+    color: #e65100;
+    padding: 8px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+  }
+
+  .mode-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .nav-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  .nav-btn {
+    background: white;
+    color: #e65100;
+    border: 2px solid var(--accent);
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: 0.2s;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .nav-btn:hover { transform: translateY(-3px); background: var(--hover); }
+  .flip-btn { background: #e65100; color: white; }
+  .flip-btn:hover { background: #d35400; color: white; }
+
+  .progress-info {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #888;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Powers 深度阅读工坊</h1>
+  <p>全词收录 | 原文例句沉浸式解析版</p>
+</header>
+
+<div class="container">
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('list')">📖 原文语境词汇表</button>
+    <button class="tab-btn" onclick="switchTab('flashcards')">🧠 沉浸式翻卡记忆</button>
+  </div>
+
+  <div id="list" class="section-content active">
+    <div class="card" id="table-container"></div>
+  </div>
+
+  <div id="flashcards" class="section-content">
+    <div class="card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+      
+      <div class="mode-controls">
+        <button id="mode-seq" class="mode-btn active" onclick="setMode('sequential')">顺序抽卡</button>
+        <button id="mode-rnd" class="mode-btn" onclick="setMode('random')">随机抽卡</button>
+      </div>
+
+      <div class="flashcard-scene" onclick="flipCard()">
+        <div class="flashcard" id="flashcardElement">
+          <div class="card-face card-front">
+            <div class="word-header-container">
+                <span class="fc-word" id="fc-word">Word</span>
+                <button class="audio-btn-small" onclick="playAudio(event)" title="点击发音">🔊</button>
+            </div>
+            <div class="base-note" id="fc-base" style="display: none;"></div>
+            <span class="fc-hint">Tap anywhere to flip ↻</span>
+          </div>
+          <div class="card-face card-back">
+            <h3 id="fc-translation">Translation</h3>
+            <p class="fc-context" id="fc-context">Context</p>
+            <p class="fc-example" id="fc-example">"Example sentence goes here..."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <button class="nav-btn" onclick="prevCard()">← 上一个</button>
+        <button class="nav-btn flip-btn" onclick="flipCard()">翻转卡片</button>
+        <button class="nav-btn" onclick="nextCard()">下一个 →</button>
+      </div>
+      
+      <p class="progress-info">
+        Card <span id="cardCount">1</span> / <span id="totalCards">0</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+const vocabularyDB = [
+  { word: "humanist fly", base: "humanist fly", translation: "结合俗语 a fly on the wall，指卑微暗中观察的文科苍蝇。", category: "Richard Powers 深度全量词汇", context: "", example: "I went to the Center and played the humanist fly on the wall." },
+  { word: "flush out", base: "flush out", translation: "冲刷掉、驱散闷热与压抑。", category: "Richard Powers 深度全量词汇", context: "", example: "Autumn came and flushed out the oppression of midwestern August." },
+  { word: "wheel in V's", base: "wheel", translation: "候鸟群排成“V”字形盘旋。", category: "Richard Powers 深度全量词汇", context: "", example: "Flocks gathered and wheeled in V’s of retreat." },
+  { word: "brisk", base: "brisk", translation: "清冽的、凛冽的。", category: "Richard Powers 深度全量词汇", context: "", example: "The brisk, invigorating air crippled me with anticipation." },
+  { word: "invigorating", base: "invigorating", translation: "令人振奋的。", category: "Richard Powers 深度全量词汇", context: "", example: "The brisk, invigorating air crippled me with anticipation." },
+  { word: "cripple", base: "cripple", translation: "使无法动弹、使瘫痪。", category: "Richard Powers 深度全量词汇", context: "", example: "The brisk, invigorating air crippled me with anticipation." },
+  { word: "scare off", base: "scare off", translation: "吓跑。", category: "Richard Powers 深度全量词汇", context: "", example: "thinking this time I might not scare off the imminence..." },
+  { word: "imminence", base: "imminence", translation: "迫近感（指灵感的到来）。", category: "Richard Powers 深度全量词汇", context: "", example: "thinking this time I might not scare off the imminence that always visited..." },
+  { word: "garbled", base: "garble", translation: "混乱不清的、变成乱码的。", category: "Richard Powers 深度全量词汇", context: "", example: "Even garbled beyond recovery..." },
+  { word: "log its reprimand", base: "log", translation: "记录下它的谴责（指火车的幻音每晚训斥他不写作）。", category: "Richard Powers 深度全量词汇", context: "", example: "my blast of turbine steam logged its nightly reprimand." },
+  { word: "hole-in-the-wall", base: "hole-in-the-wall", translation: "极其狭小的苍蝇馆子、不起眼的小破店。", category: "Richard Powers 深度全量词汇", context: "", example: "The last time I’d had a beer was in a Liége hole-in-the-wall..." },
+  { word: "refermented", base: "referment", translation: "再次发酵的。", category: "Richard Powers 深度全量词汇", context: "", example: "In the Low Countries, I’d developed a taste for refermented fruit beers." },
+  { word: "pilsner", base: "pilsner", translation: "皮尔森淡啤酒。", category: "Richard Powers 深度全量词汇", context: "", example: "in the land of the thin, frozen pilsner." },
+  { word: "kriek", base: "kriek", translation: "比利时樱桃啤酒。", category: "Richard Powers 深度全量词汇", context: "", example: "But a kriek was a lot cheaper than a round-trip ticket." },
+  { word: "cherry brew", base: "cherry brew", translation: "樱桃酿的酒。", category: "Richard Powers 深度全量词汇", context: "", example: "I would go explore after I finished the cherry brew." },
+  { word: "nurse", base: "nurse", translation: "慢吞吞地抿着酒喝。", category: "Richard Powers 深度全量词汇", context: "", example: "I sat at the bar and nursed the drink..." },
+  { word: "on tap", base: "on tap", translation: "直接从龙头打出来的扎啤。", category: "Richard Powers 深度全量词汇", context: "", example: "sold eleven hundred varieties, eighty on tap." },
+  { word: "dreg(s)", base: "dreg", translation: "液体底部的沉淀物、残渣、残酒。", category: "Richard Powers 深度全量词汇", context: "", example: "unwilling to part with even the dregs of a liquid..." },
+  { word: "narrative stab", base: "narrative stab", translation: "脑海里的叙事尝试。", category: "Richard Powers 深度全量词汇", context: "", example: "I made another narrative stab in my head." },
+  { word: "slated", base: "slate", translation: "被计划、被预定。", category: "Richard Powers 深度全量词汇", context: "", example: "originally slated to be the tallest in the world." },
+  { word: "pauperize", base: "pauperize", translation: "使破产。", category: "Richard Powers 深度全量词汇", context: "", example: "get the city to pauperize itself..." },
+  { word: "ecclesiastical", base: "ecclesiastical", translation: "教会的。", category: "Richard Powers 深度全量词汇", context: "", example: "put itself back on the ecclesiastical map." },
+  { word: "play to an audience of exactly one", base: "play", translation: "受众只有一个人（指纯自嗨的构思）。", category: "Richard Powers 深度全量词汇", context: "", example: "The only catch was that it would play to an audience of exactly one." },
+  { word: "frat", base: "frat", translation: "兄弟会。", category: "Richard Powers 深度全量词汇", context: "", example: "A frat boy, in his zeal to resuscitate a dead pitcher..." },
+  { word: "zeal", base: "zeal", translation: "狂热。", category: "Richard Powers 深度全量词汇", context: "", example: "in his zeal to resuscitate a dead pitcher..." },
+  { word: "resuscitate", base: "resuscitate", translation: "医学上的复苏、抢救。", category: "Richard Powers 深度全量词汇", context: "", example: "in his zeal to resuscitate a dead pitcher..." },
+  { word: "pitcher", base: "pitcher", translation: "扎啤壶。", category: "Richard Powers 深度全量词汇", context: "", example: "in his zeal to resuscitate a dead pitcher..." },
+  { word: "placated", base: "placate", translation: "安抚、讨好。", category: "Richard Powers 深度全量词汇", context: "", example: "“Sorry, sir,” he placated, in best commerce-major fashion." },
+  { word: "commerce-major", base: "commerce-major", translation: "商科生的（极其圆滑的口吻）。", category: "Richard Powers 深度全量词汇", context: "", example: "in best commerce-major fashion." },
+  { word: "coded self-righteousness", base: "coded self-righteousness", translation: "加密的/暗号般的自以为是。", category: "Richard Powers 深度全量词汇", context: "", example: "The word was a slap in the face, the young’s coded self-righteousness." },
+  { word: "socially acceptable form of bragging", base: "socially acceptable form of bragging", translation: "社会可接受的吹嘘形式（展示年轻本身就是炫耀）。", category: "Richard Powers 深度全量词汇", context: "", example: "In this country, youth was a socially acceptable form of bragging." },
+  { word: "get tanked", base: "get tanked", translation: "喝得烂醉如泥。", category: "Richard Powers 深度全量词汇", context: "", example: "These were the same people who had gotten tanked every night..." },
+  { word: "implausible", base: "implausible", translation: "极度不合理的、格格不入的。", category: "Richard Powers 深度全量词汇", context: "", example: "looking even more sickly and implausible out of his idiom..." },
+  { word: "gesticulated", base: "gesticulate", translation: "挥舞手势。", category: "Richard Powers 深度全量词汇", context: "", example: "my man Lentz gesticulated." },
+  { word: "tetrahedra", base: "tetrahedra", translation: "四面体（理科生吵架比划几何图形）。", category: "Richard Powers 深度全量词汇", context: "", example: "His hands built and dismantled various violent tetrahedra in the air." },
+  { word: "bordering on disgust", base: "border on", translation: "近乎于恶心与厌恶的恼怒。", category: "Richard Powers 深度全量词汇", context: "", example: "refuted with exasperation bordering on disgust." },
+  { word: "slighted", base: "slight", translation: "被轻视的、被怠慢的。", category: "Richard Powers 深度全量词汇", context: "", example: "I felt relieved that he didn’t wave, but slighted." },
+  { word: "dismayed", base: "dismay", translation: "沮丧的、错愕的。", category: "Richard Powers 深度全量词汇", context: "", example: "She was tall, amiable, dismayed..." },
+  { word: "planetarium", base: "planetarium", translation: "天文馆（形容雀斑像星座）。", category: "Richard Powers 深度全量词汇", context: "", example: "her freckles like constellations in a home planetarium." },
+  { word: "forgoing", base: "forgo", translation: "放弃、摒弃。", category: "Richard Powers 深度全量词汇", context: "", example: "forgoing the scientist’s customary indifference to grooming." },
+  { word: "grooming", base: "grooming", translation: "打理容貌、梳妆打扮。", category: "Richard Powers 深度全量词汇", context: "", example: "forgoing the scientist’s customary indifference to grooming." },
+  { word: "tweed", base: "tweed", translation: "粗花呢（学者常穿）。", category: "Richard Powers 深度全量词汇", context: "", example: "She wore tweed..." },
+  { word: "ingenue prows", base: "ingenue prow", translation: "像船头般高耸的天真少女发型。", category: "Richard Powers 深度全量词汇", context: "", example: "her ample hair rolled in one of those forties ingenue prows." },
+  { word: "voluntary", base: "voluntary", translation: "自愿的（男主用来掩饰白痴问题的“故意幽默”）。", category: "Richard Powers 深度全量词汇", context: "", example: "trying to pass off the idiocy as voluntary." },
+  { word: "penny dropped", base: "drop", translation: "恍然大悟（英式俚语）。", category: "Richard Powers 深度全量词汇", context: "", example: "Then the penny dropped." },
+  { word: "literal as a lawyer", base: "literal", translation: "像律师一样对字眼死抠字面意思。", category: "Richard Powers 深度全量词汇", context: "", example: "as literal as a lawyer giving the keynote at a libel convention." },
+  { word: "rampage", base: "rampage", translation: "暴走、狂暴状态。", category: "Richard Powers 深度全量词汇", context: "", example: "The man is on another rampage." },
+  { word: "sparring dummy", base: "sparring dummy", translation: "陪练假人、沙袋。", category: "Richard Powers 深度全量词汇", context: "", example: "I was just a convenient sparring dummy..." },
+  { word: "tangent", base: "tangent", translation: "边缘的、相切的。", category: "Richard Powers 深度全量词汇", context: "", example: "tangent to the main event." },
+  { word: "wary", base: "wary", translation: "小心翼翼的、警惕的。", category: "Richard Powers 深度全量词汇", context: "", example: "Talk had died away to wary philosophical sparks..." },
+  { word: "expended", base: "expend", translation: "耗尽的。", category: "Richard Powers 深度全量词汇", context: "", example: "now that the hard data had been expended all around." },
+  { word: "damper", base: "dampen", translation: "阻尼器、泼冷水。", category: "Richard Powers 深度全量词汇", context: "", example: "My presence threw a damper on the charged colloquium." },
+  { word: "charged", base: "charge", translation: "充满火药味的。", category: "Richard Powers 深度全量词汇", context: "", example: "threw a damper on the charged colloquium." },
+  { word: "reverted", base: "revert", translation: "恢复原状。", category: "Richard Powers 深度全量词汇", context: "", example: "Everyone reverted to good behavior." },
+  { word: "choppier", base: "choppy", translation: "更颠簸的、更不顺利的。", category: "Richard Powers 深度全量词汇", context: "", example: "His recent passage through Immigration could not have been choppier." },
+  { word: "go feral", base: "go feral", translation: "变成野蛮人、黑下来不走。", category: "Richard Powers 深度全量词汇", context: "", example: "meant to go feral the minute anyone let him in the country." },
+  { word: "cotton-frayed", base: "cotton-frayed", translation: "衣服磨破的。", category: "Richard Powers 深度全量词汇", context: "", example: "a big, cotton-frayed Kodiak of a man..." },
+  { word: "level", base: "level", translation: "提出反驳意见。", category: "Richard Powers 深度全量词汇", context: "", example: "“We can’t level any fresh objections...”" },
+  { word: "scrubbed", base: "scrub", translation: "洗得发亮的、稚嫩的。", category: "Richard Powers 深度全量词汇", context: "", example: "Keluga, a scrubbed blond boy of about twelve..." },
+  { word: "minced", base: "mince", translation: "装模作样地轻声细语。", category: "Richard Powers 深度全量词汇", context: "", example: "“Data?” Lentz minced." },
+  { word: "outburst", base: "outburst", translation: "插嘴、爆发。", category: "Richard Powers 深度全量词汇", context: "", example: "One more such outburst and you have to go back and sit with the poets." },
+  { word: "foam", base: "foam", translation: "泡沫。", category: "Richard Powers 深度全量词汇", context: "", example: "Hartrick poured herself two fingers of foam..." },
+  { word: "fluted", base: "fluted", translation: "高脚长笛杯。", category: "Richard Powers 深度全量词汇", context: "", example: "in the bottom of a fluted glass." },
+  { word: "straying", base: "stray", translation: "跑题、偏离。", category: "Richard Powers 深度全量词汇", context: "", example: "“You're straying into metaphysics, Philip.”" },
+  { word: "cakes-and-tea", base: "cakes-and-tea", translation: "喝茶吃蛋糕的英国小资情调。", category: "Richard Powers 深度全量词汇", context: "", example: "The cakes-and-tea thing." },
+  { word: "many fronts", base: "many fronts", translation: "多线作战。", category: "Richard Powers 深度全量词汇", context: "", example: "Lentz, a general fighting on many fronts, engaged the nearest comer." },
+  { word: "sexist", base: "sexist", translation: "性别歧视的。", category: "Richard Powers 深度全量词汇", context: "", example: "“Dr. Di’! Of all the insulting, sexist—”" },
+  { word: "mumbo jumbo", base: "mumbo jumbo", translation: "装神弄鬼的胡言乱语。", category: "Richard Powers 深度全量词汇", context: "", example: "You are the ones evoking mystic mumbo jumbo." },
+  { word: "malarkey", base: "malarkey", translation: "胡扯、瞎说、废话。", category: "Richard Powers 深度全量词汇", context: "", example: "Don’t throw this ‘irreducible emergent profusion’ malarkey at me." },
+  { word: "postulating", base: "postulate", translation: "假设。", category: "Richard Powers 深度全量词汇", context: "", example: "Next thing you know, you’re going to be postulating the existence of a soul." },
+  { word: "squabble", base: "squabble", translation: "为琐事无谓拌嘴。", category: "Richard Powers 深度全量词汇", context: "", example: "The squabble..." },
+  { word: "at sea", base: "at sea", translation: "茫然不知所措。", category: "Richard Powers 深度全量词汇", context: "", example: "smile uncertainly at sea." },
+  { word: "obtrusive", base: "obtrusive", translation: "突兀的、惹眼的、强加于人的。", category: "Richard Powers 深度全量词汇", context: "", example: "theorists would forever opt for the humblest, least-obtrusive sentence allowed them." },
+  { word: "purse", base: "purse", translation: "撅起嘴唇（盘算发难）。", category: "Richard Powers 深度全量词汇", context: "", example: "Lentz pulled back and pursed his lips." },
+  { word: "contemplate", base: "contemplate", translation: "盘算深思。", category: "Richard Powers 深度全量词汇", context: "", example: "He contemplated finishing me in one swipe." },
+  { word: "in one swipe", base: "in one swipe", translation: "一巴掌(一击)终结。", category: "Richard Powers 深度全量词汇", context: "", example: "He contemplated finishing me in one swipe." },
+  { word: "about-face", base: "about-face", translation: "180度大转弯。", category: "Richard Powers 深度全量词汇", context: "", example: "Instead, he did a rapid about-face." },
+  { word: "maladroit", base: "maladroit", translation: "极其笨拙的社恐人士。", category: "Richard Powers 深度全量词汇", context: "", example: "You see, I’m a bit of a social maladroit." },
+  { word: "in this pursuit", base: "in this pursuit", translation: "在这个行当里。", category: "Richard Powers 深度全量词汇", context: "", example: "We all are, in this pursuit." },
+  { word: "comes with the turf", base: "come with the turf", translation: "职业病、圈子里不可避免的事。", category: "Richard Powers 深度全量词汇", context: "", example: "Comes with the turf." },
+  { word: "sequined", base: "sequin", translation: "穿缀满亮片衣服的。", category: "Richard Powers 深度全量词汇", context: "", example: "over the body of a sequined assistant he is about to saw in half." },
+  { word: "affected brusqueness", base: "affected brusqueness", translation: "故作粗鲁、装出来的无礼。", category: "Richard Powers 深度全量词汇", context: "", example: "the affected brusqueness..." },
+  { word: "know-it-all megalo", base: "know-it-all megalo", translation: "自以为无所不知的狂妄自大狂。", category: "Richard Powers 深度全量词汇", context: "", example: "the know-it-all megalo—" },
+  { word: "kinked", base: "kink", translation: "扭曲的、别扭的。", category: "Richard Powers 深度全量词汇", context: "", example: "I’'d noticed the kinked walk..." },
+  { word: "affiliation", base: "affiliation", translation: "隶属关系。", category: "Richard Powers 深度全量词汇", context: "", example: "You have an affiliation with—what’s it called these days?" },
+  { word: "passes for", base: "pass for", translation: "被当作、混充。", category: "Richard Powers 深度全量词汇", context: "", example: "What passes for knowledge in your so-called discipline?" },
+  { word: "evil twin", base: "evil twin", translation: "邪恶双胞胎。", category: "Richard Powers 深度全量词汇", context: "", example: "He looked for a moment like Jacob Bronowski’s evil twin." },
+  { word: "swim clear of the wreck", base: "swim", translation: "游出沉船（摆脱失败阴影）。", category: "Richard Powers 深度全量词汇", context: "", example: "I’d failed to swim clear of the wreck." },
+  { word: "fell flat", base: "fall flat", translation: "冷场了。", category: "Richard Powers 深度全量词汇", context: "", example: "Keluga’s crack fell flat." },
+  { word: "raspberry", base: "raspberry", translation: "吐舌头发出的嘲弄声。", category: "Richard Powers 深度全量词汇", context: "", example: "I made a little grad-student raspberry." },
+  { word: "ringed", base: "ring", translation: "用手比了个零分。", category: "Richard Powers 深度全量词汇", context: "", example: "I ringed my thumb and forefinger..." },
+  { word: "interjected", base: "interject", translation: "插嘴。", category: "Richard Powers 深度全量词汇", context: "", example: "“Can I ask you something?” Keluga interjected." },
+  { word: "cackled", base: "cackle", translation: "咯咯怪笑。", category: "Richard Powers 深度全量词汇", context: "", example: "Lentz cackled." },
+  { word: "tote", base: "tote", translation: "帆布包。", category: "Richard Powers 深度全量词汇", context: "", example: "resting a tote bag on her hip." },
+  { word: "sheaf", base: "sheaf", translation: "一沓纸。", category: "Richard Powers 深度全量词汇", context: "", example: "amid a sheaf of papers..." },
+  { word: "Viking Portable", base: "Viking Portable", translation: "企鹅维京便携版丛书。", category: "Richard Powers 深度全量词汇", context: "", example: "issued an ancient softbound Viking Portable." },
+  { word: "scored", base: "score", translation: "划破、磨损。", category: "Richard Powers 深度全量词汇", context: "", example: "Its spine was scored to pulp." },
+  { word: "pulp", base: "pulp", translation: "纸浆。", category: "Richard Powers 深度全量词汇", context: "", example: "Its spine was scored to pulp." },
+  { word: "blurb", base: "blurb", translation: "封底推荐语。", category: "Richard Powers 深度全量词汇", context: "", example: "I read the blurb at the top..." },
+  { word: "scuffed", base: "scuff", translation: "磨损的。", category: "Richard Powers 深度全量词汇", context: "", example: "the cover’s being badly scuffed." },
+  { word: "bemused", base: "bemuse", translation: "困惑茫然的。", category: "Richard Powers 深度全量词汇", context: "", example: "with a bemused patience..." },
+  { word: "eccentric", base: "eccentric", translation: "古怪的。", category: "Richard Powers 深度全量词汇", context: "", example: "long used to eccentric requests." },
+  { word: "sicked", base: "sic", translation: "放狗去咬。", category: "Richard Powers 深度全量词汇", context: "", example: "it sicked a pack of ghosts on me..." },
+  { word: "hounding", base: "hound", translation: "追捕、纠缠。", category: "Richard Powers 深度全量词汇", context: "", example: "hounding the overread Don." },
+  { word: "suit up", base: "suit up", translation: "穿上战袍。", category: "Richard Powers 深度全量词汇", context: "", example: "“Are you going to suit up and help us do battle?”" },
+  { word: "self-effacing", base: "self-effacing", translation: "自我抹退的、谦卑的。", category: "Richard Powers 深度全量词汇", context: "", example: "without any of that self-effacing edge..." },
+  { word: "under the gun", base: "under the gun", translation: "面临考核压力、被枪指着。", category: "Richard Powers 深度全量词汇", context: "", example: "of junior faculty under the gun." },
+  { word: "temper", base: "temper", translation: "锤炼、缓和。", category: "Richard Powers 深度全量词汇", context: "", example: "you temper yourself against the definitive." },
+  { word: "wry", base: "wry", translation: "苦笑的、挖苦的。", category: "Richard Powers 深度全量词汇", context: "", example: "You go humble, understated, wry." },
+  { word: "doublet", base: "doublet", translation: "紧身上衣（战袍）。", category: "Richard Powers 深度全量词汇", context: "", example: "“Tm afraid my doublet’s in the wash.”" },
+  { word: "drew up", base: "draw up", translation: "走近。", category: "Richard Powers 深度全量词汇", context: "", example: "by the time we two drew up." },
+  { word: "chummy", base: "chummy", translation: "亲密的。", category: "Richard Powers 深度全量词汇", context: "", example: "You appear to be chummy with Hartrick already." },
+  { word: "glossed", base: "gloss", translation: "解释、作注。", category: "Richard Powers 深度全量词汇", context: "", example: "“Marcel writes Books,” Lentz glossed..." },
+  { word: "immortalized", base: "immortalize", translation: "被不朽化（写进小说）。", category: "Richard Powers 深度全量词汇", context: "", example: "We’re all going to end up immortalized." },
+  { word: "corpus callosum", base: "corpus callosum", translation: "胼胝体。", category: "Richard Powers 深度全量词汇", context: "", example: "severing the corpus callosum cured epilepsy." },
+  { word: "epilepsy", base: "epilepsy", translation: "癫痫。", category: "Richard Powers 深度全量词汇", context: "", example: "severing the corpus callosum cured epilepsy." },
+  { word: "associative representation formation in the hippocampus", base: "associative representation formation in the hippocampus", translation: "海马体中的联想表征形成。", category: "Richard Powers 深度全量词汇", context: "", example: "I do associative representation formation in the hippocampus." },
+  { word: "PET scan", base: "PET scan", translation: "正电子发射脑部扫描仪。", category: "Richard Powers 深度全量词汇", context: "", example: "pasted up on a PET scan." },
+  { word: "temporal lobe", base: "temporal lobe", translation: "颞叶。", category: "Richard Powers 深度全量词汇", context: "", example: "splash around the temporal lobe..." },
+  { word: "holdable shorthand", base: "holdable shorthand", translation: "大脑固定成的“可保存的速记”。", category: "Richard Powers 深度全量词汇", context: "", example: "fixing that world in a holdable shorthand." },
+  { word: "cartoon flickers", base: "cartoon flickers", translation: "卡通般的闪烁。", category: "Richard Powers 深度全量词汇", context: "", example: "its cartoon flickers pasted up on a PET scan." },
+  { word: "computable", base: "computable", translation: "可计算的。", category: "Richard Powers 深度全量词汇", context: "", example: "Is the problem computable in finite time?" },
+  { word: "irreducible", base: "irreducible", translation: "不可还原的。", category: "Richard Powers 深度全量词汇", context: "", example: "Don’t throw this ‘irreducible emergent profusion’ malarkey at me." },
+  { word: "emergent profusion", base: "emergent profusion", translation: "创发性丰饶（哲学黑话）。", category: "Richard Powers 深度全量词汇", context: "", example: "‘irreducible emergent profusion’ malarkey at me." },
+  { word: "shave up", base: "shave up", translation: "削片。", category: "Richard Powers 深度全量词汇", context: "", example: "happy to shave up several hundred simian forebrains..." },
+  { word: "simian", base: "simian", translation: "猿猴的。", category: "Richard Powers 深度全量词汇", context: "", example: "simian forebrains..." },
+  { word: "forebrains", base: "forebrains", translation: "前脑。", category: "Richard Powers 深度全量词汇", context: "", example: "simian forebrains..." },
+  { word: "myopia", base: "myopia", translation: "近视。", category: "Richard Powers 深度全量词汇", context: "", example: "The myopia, the dwarfhood..." },
+  { word: "dwarfhood", base: "dwarfhood", translation: "侏儒症。", category: "Richard Powers 深度全量词汇", context: "", example: "the dwarfhood, the aggression..." },
+  { word: "scoliosis", base: "scoliosis", translation: "脊柱侧弯。", category: "Richard Powers 深度全量词汇", context: "", example: "the scoliosis, the know-it-all megalo..." },
+  { word: "inferior frontal gyrus", base: "inferior frontal gyrus", translation: "大脑额下回。", category: "Richard Powers 深度全量词汇", context: "", example: "modeled the function of the inferior frontal gyrus..." },
+  { word: "First Sally", base: "First Sally", translation: "《堂吉诃德》的“第一次出击”。", category: "Richard Powers 深度全量词汇", context: "", example: "I turned to the First Sally." },
+  { word: "Egyptian empress", base: "Egyptian empress", translation: "埃及女皇（代指高贵冷艳的女同学）。", category: "Richard Powers 深度全量词汇", context: "", example: "tell the Egyptian empress who sat in front of me..." },
+  { word: "sophomore", base: "sophomore", translation: "大二学生。", category: "Richard Powers 深度全量词汇", context: "", example: "who sat in front of me in sophomore humanities..." },
+  { word: "Rhesus pieces", base: "Rhesus pieces", translation: "地狱谐音梗：恒河猴切片（发音同巧克力豆品牌）。", category: "Richard Powers 深度全量词汇", context: "", example: "“You cut up monkeys?” I whispered to Diana. “Rhesus pieces?”" },
+  { word: "palm on a platter", base: "palm on a platter", translation: "盘子里装断手。", category: "Richard Powers 深度全量词汇", context: "", example: "picked the one showing a palm on a platter." },
+  { word: "hitting the salsa", base: "hit the salsa", translation: "正在吃红色莎莎酱（通感恶心）。", category: "Richard Powers 深度全量词汇", context: "", example: "“Ram, please. I’m still hitting the salsa.”" },
+  { word: "Hand in hand with wandering steps and slow", base: "Hand in hand with wandering steps and slow", translation: "弥尔顿《失乐园》最后一句。", category: "Richard Powers 深度全量词汇", context: "", example: "‘Hand in hand with wandering steps and slow . . .”" },
+  { word: "Two Cultures", base: "Two Cultures", translation: "斯诺的“两种文化”理论。", category: "Richard Powers 深度全量词汇", context: "", example: "Where the hell is the Two Cultures split when you need it?" },
+  { word: "Jacob Bronowski", base: "Jacob Bronowski", translation: "英国极著名的科学史学家。", category: "Richard Powers 深度全量词汇", context: "", example: "He looked for a moment like Jacob Bronowski’s evil twin." },
+  { word: "The Frontier", base: "The Frontier", translation: "美国边疆理论。", category: "Richard Powers 深度全量词汇", context: "", example: "Discuss the idea of the Frontier and its tragic consequences..." },
+  { word: "Ma and Pa Kent", base: "Ma and Pa Kent", translation: "《超人》里收养外星婴儿的淳朴农场主。", category: "Richard Powers 深度全量词汇", context: "", example: "Ma and Pa Kent, out in one of those states longer than it is wide..." },
+  { word: "Little Marcel", base: "Little Marcel", translation: "讽刺娇贵文学巨匠普鲁斯特。", category: "Richard Powers 深度全量词汇", context: "", example: "“Little Marcel,” I said." },
+  { word: "How are the words treating you?", base: "How are the words treating you?", translation: "作家专属打招呼方式。", category: "Richard Powers 深度全量词汇", context: "", example: "“Little Marcel! How are the words treating you?”" },
+  { word: "Kodiak", base: "Kodiak", translation: "科迪亚克棕熊（形容体型巨大）。", category: "Richard Powers 深度全量词汇", context: "", example: "a big, cotton-frayed Kodiak of a man..." },
+  { word: "bear paws", base: "bear paws", translation: "熊掌。", category: "Richard Powers 深度全量词汇", context: "", example: "Plover waved his bear paws again." },
+  { word: "bogged down in old amber", base: "bog down", translation: "死死困在老琥珀中（深陷回忆）。", category: "Richard Powers 深度全量词汇", context: "", example: "Those sixteen words from Chapter One bogged me down in old amber." },
+  { word: "mired as a Cambrian bug in molasses memory", base: "mire", translation: "像寒武纪虫子困在糖蜜中。", category: "Richard Powers 深度全量词汇", context: "", example: "I felt mired as a Cambrian bug in molasses memory." },
+  { word: "the mental palette exploding in desperate semaphores", base: "explode", translation: "大脑调色板爆发成绝望的信号旗（绝美隐喻）。", category: "Richard Powers 深度全量词汇", context: "", example: "the mental palette exploding in desperate semaphores..." },
+  { word: "longer than it is wide", base: "longer than it is wide", translation: "长度大于宽度的州（讽刺中西部平坦无聊）。", category: "Richard Powers 深度全量词汇", context: "", example: "one of those states longer than it is wide..." },
+  { word: "garbled beyond recovery", base: "garble", translation: "彻底混乱扭曲成乱码。", category: "Richard Powers 深度全量词汇", context: "", example: "Even garbled beyond recovery, my blast of turbine steam logged its nightly reprimand." },
+  { word: "least-obtrusive", base: "obtrusive", translation: "最不突兀、最谦卑强加于人的。", category: "Richard Powers 深度全量词汇", context: "", example: "theorists would forever opt for the humblest, least-obtrusive sentence allowed them." },
+  { word: "magician waves handkerchiefs", base: "wave", translation: "像魔术师障眼法一样挥舞双手掩饰自卑。", category: "Richard Powers 深度全量词汇", context: "", example: "the way a magician waves handkerchiefs over the body of a sequined assistant..." },
+  { word: "plagued by the monsters that gyrus modeled", base: "plague", translation: "哪怕研究透了情绪器官，依旧被自身产生的心魔折磨。", category: "Richard Powers 深度全量词汇", context: "", example: "might still be plagued by the monsters that gyrus modeled." },
+  { word: "Orthography to write home about", base: "write home about", translation: "极度奇葩反人类的拼写系统（正话反说）。", category: "Richard Powers 深度全量词汇", context: "", example: "An orthography to write home about." },
+  { word: "Not know from Adam", base: "know", translation: "圣经典故：完全不认识、一无所知。", category: "Richard Powers 深度全量词汇", context: "", example: "a nineteen-year-old Polish boy I didn’t know from Adam." },
+  { word: "Call the pros", base: "call", translation: "叫专业精神科医生。", category: "Richard Powers 深度全量词汇", context: "", example: "Do we need to call the pros? Start the intervention?" },
+  { word: "Start the intervention", base: "start", translation: "启动精神干预治疗。", category: "Richard Powers 深度全量词汇", context: "", example: "Start the intervention?" },
+  { word: "Surface-mount to the CRT", base: "surface-mount", translation: "表面贴装/焊在老式电视屏幕前。", category: "Richard Powers 深度全量词汇", context: "", example: "used to surface-mount me to the cathode-ray tube." },
+  { word: "The open parenthesis", base: "open parenthesis", translation: "未闭合的左括号（吵架时控场话语）。", category: "Richard Powers 深度全量词汇", context: "", example: "The open parenthesis! What would you like me to call you?" },
+  { word: "A low blow", base: "low blow", translation: "违规的下三滥攻击。", category: "Richard Powers 深度全量词汇", context: "", example: "A low blow, but my own." },
+  { word: "Racket", base: "racket", translation: "行当、营生、圈子。", category: "Richard Powers 深度全量词汇", context: "", example: "A bit lacking in imagination for someone in your racket..." },
+  { word: "Give me credit for a little intelligence", base: "give", translation: "就不能当我是个稍微有点智商的人吗。", category: "Richard Powers 深度全量词汇", context: "", example: "“Christ. Give me credit for a little intelligence.”" },
+  { word: "Armageddon", base: "Armageddon", translation: "世界末日决战（指二战）。", category: "Richard Powers 深度全量词汇", context: "", example: "When Armageddon reached as far as the Back of the Yards..." },
+  { word: "Gold Star mother", base: "Gold Star mother", translation: "阵亡将士的母亲。", category: "Richard Powers 深度全量词汇", context: "", example: "the widow and the bewildered Gold Star mother." },
+  { word: "Adopted government", base: "adopt", translation: "归化的/认领的政府。", category: "Richard Powers 深度全量词汇", context: "", example: "his adopted government left it: one of those pristine stone crosses..." },
+  { word: "Two electric bills at the most", base: "bill", translation: "婚姻极其短暂（只够交两次电费）。", category: "Richard Powers 深度全量词汇", context: "", example: "lived together for two electric bills at the most." },
+  { word: "Strafed", base: "strafe", translation: "战机低空扫射。", category: "Richard Powers 深度全量词汇", context: "", example: "at reports of a village horse being strafed..." },
+  { word: "Pristine", base: "pristine", translation: "一尘不染的。", category: "Richard Powers 深度全量词汇", context: "", example: "one of those pristine stone crosses..." },
+  { word: "Credenza", base: "credenza", translation: "镶嵌象牙的华丽储物柜。", category: "Richard Powers 深度全量词汇", context: "", example: "lay in some ivory-inlaid credenza in the Hague..." },
+  { word: "Schooner of state", base: "schooner", translation: "国家之船（隐喻移民抛弃祖国）。", category: "Richard Powers 深度全量词汇", context: "", example: "parents who had halfheartedly jumped the schooner of state." },
+  { word: "Curio", base: "curio", translation: "供人围观的稀罕物/古董。", category: "Richard Powers 深度全量词汇", context: "", example: "a restored citizen, she became an instant curio." },
+  { word: "Steeped in", base: "steep", translation: "饱含着、浸泡在。", category: "Richard Powers 深度全量词汇", context: "", example: "steeped in expressions discarded a generation before." },
+  { word: "Archaic", base: "archaic", translation: "老掉牙的、古老的。", category: "Richard Powers 深度全量词汇", context: "", example: "cousins with archaic names and fairy-tale histories." },
+  { word: "Bracing", base: "bracing", translation: "清冷刺骨的。", category: "Richard Powers 深度全量词汇", context: "", example: "The day is bracing." },
+  { word: "Crisp", base: "crisp", translation: "干脆清冽的。", category: "Richard Powers 深度全量词汇", context: "", example: "It should not be this crisp yet..." },
+  { word: "Sere", base: "sere", translation: "干枯凋零的。", category: "Richard Powers 深度全量词汇", context: "", example: "this chilly or sere." },
+  { word: "Locomotive", base: "locomotive", translation: "火车头。", category: "Richard Powers 深度全量词汇", context: "", example: "unrolled farther than I could see from the locomotive..." },
+  { word: "Tender", base: "tender", translation: "煤水车（当苦力的地方）。", category: "Richard Powers 深度全量词汇", context: "", example: "But it needed me in the tender." },
+  { word: "Boiler", base: "boiler", translation: "锅炉。", category: "Richard Powers 深度全量词汇", context: "", example: "kept the throttle open and the boiler stoked." },
+  { word: "Throttle", base: "throttle", translation: "节流阀、油门。", category: "Richard Powers 深度全量词汇", context: "", example: "kept the throttle open..." },
+  { word: "Hammering", base: "hammer", translation: "轰鸣声。", category: "Richard Powers 深度全量词汇", context: "", example: "the low-grade hammering on rail..." },
+  { word: "Dampened", base: "dampen", translation: "减弱、消音。", category: "Richard Powers 深度全量词汇", context: "", example: "dampened to a distant click the longer I failed it." },
+  { word: "Dropped off", base: "drop off", translation: "被扔下车。", category: "Richard Powers 深度全量词汇", context: "", example: "I felt myself dropped off at a deserted siding..." },
+  { word: "Siding", base: "siding", translation: "废弃的岔道。", category: "Richard Powers 深度全量词汇", context: "", example: "dropped off at a deserted siding..." },
+  { word: "Blanched", base: "blanch", translation: "恶心得脸色发白。", category: "Richard Powers 深度全量词汇", context: "", example: "Keluga blanched." },
+  { word: "Eye-darting", base: "eye-darting", translation: "眼神乱飞的神经质状态。", category: "Richard Powers 深度全量词汇", context: "", example: "The eye-darting edginess started to get on my nerves." },
+  { word: "Edginess", base: "edginess", translation: "焦躁不安。", category: "Richard Powers 深度全量词汇", context: "", example: "The eye-darting edginess started to get on my nerves." },
+  { word: "Poked out", base: "poke out", translation: "突兀地冒出来。", category: "Richard Powers 深度全量词汇", context: "", example: "isolated half-timbered villages poked out..." },
+  { word: "Half-timbered", base: "half-timbered", translation: "半木结构村庄残骸。", category: "Richard Powers 深度全量词汇", context: "", example: "isolated half-timbered villages poked out..." },
+  { word: "Glaze", base: "glaze", translation: "覆盖上一层亮面。", category: "Richard Powers 深度全量词汇", context: "", example: "Sidewalks glazed over with cool rain." },
+  { word: "Whiff", base: "whiff", translation: "一阵微弱的初冬气息。", category: "Richard Powers 深度全量词汇", context: "", example: "emitted a whiff of premature winter." },
+  { word: "Membership in this life", base: "membership", translation: "作为人类一分子的归属感 / 参与这场生命的资格。", category: "Richard Powers 深度全量词汇", context: "", example: "longer than membership in this life." },
+  { word: "Goliath-killing hope", base: "Goliath-killing", translation: "以弱胜强的希望（大卫与歌利亚）。", category: "Richard Powers 深度全量词汇", context: "", example: "cut into me with a boy’s Goliath-killing hope..." },
+  { word: "Eternal repetition", base: "eternal repetition", translation: "尼采的“永恒轮回”（嘲讽印度教）。", category: "Richard Powers 深度全量词汇", context: "", example: "“T thought you people believed in eternal repetition”" },
+  { word: "Postmodern postsolipsist", base: "postmodern postsolipsist", translation: "抛黑话的后现代唯我论者。", category: "Richard Powers 深度全量词汇", context: "", example: "Every postmodern postsolipsist..." },
+  { word: "Put them down for the count", base: "put down", translation: "拳击击倒读秒（彻底终结不再写）。", category: "Richard Powers 深度全量词汇", context: "", example: "I planned to put them down for the count." },
+  { word: "Bail out", base: "bail out", translation: "跳伞逃生、放弃退出。", category: "Richard Powers 深度全量词汇", context: "", example: "peaked three years before I tried to bail out." },
+  { word: "Age lurches in fits and starts", base: "lurch", translation: "衰老是一阵阵走走停停袭来的。", category: "Richard Powers 深度全量词汇", context: "", example: "Age lurches in fits and starts..." },
+  { word: "Holes up awhile", base: "hole up", translation: "像冬眠一样蛰伏隐藏。", category: "Richard Powers 深度全量词汇", context: "", example: "It holes up awhile, stock-still..." },
+  { word: "stock-still", base: "stock-still", translation: "纹丝不动。", category: "Richard Powers 深度全量词汇", context: "", example: "It holes up awhile, stock-still..." },
+  { word: "Play catch-up ball", base: "play", translation: "拼命追赶进度（指让人瞬间变老）。", category: "Richard Powers 深度全量词汇", context: "", example: "slams out one afternoon to play catch-up ball." },
+  { word: "Slams out", base: "slam out", translation: "猛然爆发。", category: "Richard Powers 深度全量词汇", context: "", example: "slams out one afternoon to play catch-up ball." },
+  { word: "Immortally wasted body", base: "waste", translation: "不朽地枯萎着的躯体。", category: "Richard Powers 深度全量词汇", context: "", example: "watch the immortally wasted body pace through..." },
+  { word: "Accusing dreams", base: "accuse", translation: "充满无声控诉的噩梦。", category: "Richard Powers 深度全量词汇", context: "", example: "a decade and a half of accusing dreams." },
+  { word: "Reckless bet", base: "bet", translation: "鲁莽的赌约。", category: "Richard Powers 深度全量词汇", context: "", example: "The writer who had signed on to the reckless bet was dead." },
+  { word: "Local trap of temperament", base: "trap", translation: "性格的局部陷阱。", category: "Richard Powers 深度全量词汇", context: "", example: "each clinging to the local trap of temperament..." },
+  { word: "Cow-eyed", base: "cow-eyed", translation: "像小牛一样的眼睛（无辜且充满信任）。", category: "Richard Powers 深度全量词汇", context: "", example: "her cow-eyed, trusting complicity..." },
+  { word: "Trusting complicity", base: "complicity", translation: "充满信任的心照不宣。", category: "Richard Powers 深度全量词汇", context: "", example: "her cow-eyed, trusting complicity played no role..." },
+  { word: "Impulse confession", base: "confession", translation: "冲动的坦白。", category: "Richard Powers 深度全量词汇", context: "", example: "played no role in my impulse confession." },
+  { word: "Sight unseen", base: "sight unseen", translation: "盲目地、未见实物地。", category: "Richard Powers 深度全量词汇", context: "", example: "I came to her sight unseen." },
+  { word: "Heart-stoppingly plain", base: "plain", translation: "普通到了令人震惊的地步（矛盾修辞）。", category: "Richard Powers 深度全量词汇", context: "", example: "how heart-stoppingly plain she could look." },
+  { word: "Compassionate sound", base: "sound", translation: "充满纯粹怜悯的声音。", category: "Richard Powers 深度全量词汇", context: "", example: "its own need to exist as anything at all but compassionate sound." },
+  { word: "Recalcitrant Slavic consonants", base: "recalcitrant", translation: "桀骜不驯的、让人舌头打结的斯拉夫辅音。", category: "Richard Powers 深度全量词汇", context: "", example: "clustered with lots of recalcitrant Slavic consonants." },
+  { word: "Emulation of Kraków", base: "emulation", translation: "克拉科夫的仿造城/缩影。", category: "Richard Powers 深度全量词汇", context: "", example: "that emulation of Kraków that interwar Poles ran..." },
+  { word: "Diffraction-pattern cemeteries", base: "diffraction-pattern", translation: "像光波衍射图案一样密集的公墓。", category: "Richard Powers 深度全量词汇", context: "", example: "endless diffraction-pattern cemeteries..." },
+  { word: "Consolation prize", base: "prize", translation: "唯一的安慰奖。", category: "Richard Powers 深度全量词汇", context: "", example: "C.’s birth was her mother’s consolation prize..." },
+  { word: "Lithuanian ghetto", base: "ghetto", translation: "立陶宛移民的贫民聚居区。", category: "Richard Powers 深度全量词汇", context: "", example: "rented a house in a Lithuanian ghetto..." },
+  { word: "War bride", base: "bride", translation: "战时新娘。", category: "Richard Powers 深度全量词汇", context: "", example: "Eddie and his war bride lived together..." },
+  { word: "Snagged the edge of his retina", base: "snag", translation: "挂住了他视网膜边缘（指进入余光引起注意）。", category: "Richard Powers 深度全量词汇", context: "", example: "My shadow must have snagged the edge of his retina..." },
+  { word: "Quarter of a byte", base: "quarter", translation: "四分之一个字节（夸张形容极少）。", category: "Richard Powers 深度全量词汇", context: "", example: "I could count in a quarter of a byte the times I'd gone for a beer..." },
+  { word: "Safeguarding the precious synapses", base: "safeguard", translation: "保护珍贵的脑细胞突触（不喝酒）。", category: "Richard Powers 深度全量词汇", context: "", example: "Safeguarding the precious synapses." },
+  { word: "Postfrontal neurology stint", base: "stint", translation: "在神经学部门的服役打工。", category: "Richard Powers 深度全量词汇", context: "", example: "should do a postfrontal neurology stint." },
+  { word: "Get under my skin", base: "get", translation: "激怒我、让我心里破防。", category: "Richard Powers 深度全量词汇", context: "", example: "I was sorry I’d let him get under my skin." },
+  { word: "Patronizing", base: "patronize", translation: "居高临下、自以为是的施舍。", category: "Richard Powers 深度全量词汇", context: "", example: "“Tt’s self-conscious and patronizing.”" },
+  { word: "Bobbed my head", base: "bob", translation: "局促地点头哈腰。", category: "Richard Powers 深度全量词汇", context: "", example: "I bobbed my head in ridiculous acquiescence..." },
+  { word: "Virgin continent", base: "virgin", translation: "处女地（指全新探索的大陆）。", category: "Richard Powers 深度全量词汇", context: "", example: "Reading was my virgin continent." },
+  { word: "computational hurdy-gurdy", base: "computational hurdy-gurdy", translation: "计算手摇风琴。", category: "Richard Powers 深度全量词汇", context: "", example: "out of a computational hurdy-gurdy." },
+  { word: "Connectionism", base: "connectionism", translation: "早期神经网络别名“连接主义”。", category: "Richard Powers 深度全量词汇", context: "", example: "The field went by the nickname of connectionism." },
+  { word: "Weight / Shifting signal weights", base: "weight", translation: "信号权重 / 细胞放电权重。", category: "Richard Powers 深度全量词汇", context: "", example: "made and unmade the shifting signal weights that triggered souls." },
+  { word: "Threshold", base: "threshold", translation: "细胞激活阈值。", category: "Richard Powers 深度全量词汇", context: "", example: "against a shifting threshold." },
+  { word: "Fire", base: "fire", translation: "神经放电。", category: "Richard Powers 深度全量词汇", context: "", example: "Fire or not?" },
+  { word: "Loop back", base: "loop back", translation: "信号循环折返重塑网络。", category: "Richard Powers 深度全量词汇", context: "", example: "firings looped back into the net..." },
+  { word: "Squads / Layers", base: "squad", translation: "编组的小队 / 层级。", category: "Richard Powers 深度全量词汇", context: "", example: "grouped their squads of faked-up cells together in layers." },
+  { word: "Connective brambles", base: "bramble", translation: "荆棘丛般的复杂突触连接。", category: "Richard Powers 深度全量词汇", context: "", example: "Across the connective brambles..." },
+  { word: "Knotted space", base: "knot", translation: "死结般的隐藏层黑盒空间。", category: "Richard Powers 深度全量词汇", context: "", example: "lay all the knotted space where the net... associated." },
+  { word: "Ghost in the machine", base: "ghost", translation: "机器中的幽灵。", category: "Richard Powers 深度全量词汇", context: "", example: "where the ghost in the machine got out." },
+  { word: "Counterpoint", base: "counterpoint", translation: "心理对位法、绝佳调剂。", category: "Richard Powers 深度全量词汇", context: "", example: "Reading made good counterpoint to my final rewrite." },
+  { word: "Delaying tactic", base: "delaying tactic", translation: "逃避现实的拖延战术。", category: "Richard Powers 深度全量词汇", context: "", example: "It was also a great day-waster and delaying tactic." },
+  { word: "Ridiculous acquiescence", base: "acquiescence", translation: "荒谬局促的顺从妥协。", category: "Richard Powers 深度全量词汇", context: "", example: "I bobbed my head in ridiculous acquiescence..." },
+  { word: "Dismissed to safety", base: "dismiss", translation: "如释重负地逃回安全地带。", category: "Richard Powers 深度全量词汇", context: "", example: "dismissed to safety." },
+  { word: "Citizens band", base: "citizens band", translation: "吵闹的大众公开论坛。", category: "Richard Powers 深度全量词汇", context: "", example: "cut a wide side step around the citizens band." },
+  { word: "Lurker", base: "lurker", translation: "潜水员。", category: "Richard Powers 深度全量词汇", context: "", example: "the Literary Lurker." },
+  { word: "Dabbler", base: "dabbler", translation: "业余票友。", category: "Richard Powers 深度全量词汇", context: "", example: "Novice symposium dabbler..." },
+  { word: "Renegade", base: "renegade", translation: "离经叛道者。", category: "Richard Powers 深度全量词汇", context: "", example: "The Danish renegade." },
+  { word: "Provocateur", base: "provocateur", translation: "引战煽动刺头。", category: "Richard Powers 深度全量词汇", context: "", example: "The Berkeley genius provocateur." },
+  { word: "Flash-in-the-pan", base: "flash-in-the-pan", translation: "昙花一现/华而不实先生。", category: "Richard Powers 深度全量词汇", context: "", example: "archrival, Flashin-the-Pan." },
+  { word: "Burlesque", base: "burlesque", translation: "滑稽夸张的模仿秀。", category: "Richard Powers 深度全量词汇", context: "", example: "His burlesque was note-perfect." },
+  { word: "In kind", base: "in kind", translation: "以牙还牙地回应。", category: "Richard Powers 深度全量词汇", context: "", example: "I wouldn't have answered him in kind then..." },
+  { word: "Bait", base: "bait", translation: "故意激怒/逗弄。", category: "Richard Powers 深度全量词汇", context: "", example: "I figured I might at least bait this scientist." },
+  { word: "Tripped an association", base: "trip", translation: "拨动开关般触发了联想。", category: "Richard Powers 深度全量词汇", context: "", example: "Reading that fact tripped an association in me." },
+  { word: "Reed breathing", base: "breathing", translation: "簧片如人类呼吸般的起伏。", category: "Richard Powers 深度全量词汇", context: "", example: "how that simple reed breathing made and unmade..." },
+  { word: "Trigger souls", base: "trigger", translation: "触动灵魂。", category: "Richard Powers 深度全量词汇", context: "", example: "the shifting signal weights that triggered souls." },
+  { word: "Cut a wide side step around", base: "cut", translation: "远远绕开。", category: "Richard Powers 深度全量词汇", context: "", example: "cut a wide side step around the citizens band." },
+  { word: "Blot", base: "blot", translation: "遮挡、抹掉。", category: "Richard Powers 深度全量词汇", context: "", example: "to blot the incriminating text on my tube." },
+  { word: "Incriminating", base: "incriminate", translation: "怕露馅留下把柄的文字。", category: "Richard Powers 深度全量词汇", context: "", example: "to blot the incriminating text..." },
+  { word: "Thumbnail", base: "thumbnail", translation: "两句话的极简短概括。", category: "Richard Powers 深度全量词汇", context: "", example: "gave my life in thumbnail..." },
+  { word: "Precariously", base: "precariously", translation: "摇摇欲坠地。", category: "Richard Powers 深度全量词汇", context: "", example: "stood upright even more precariously than he reclined." },
+  { word: "List", base: "list", translation: "身体歪歪扭扭地倾斜。", category: "Richard Powers 深度全量词汇", context: "", example: "he listed like a marionette..." },
+  { word: "Pallor", base: "pallor", translation: "病态死白的肤色。", category: "Richard Powers 深度全量词汇", context: "", example: "His skin had the pallor of a sixties educational TV host." },
+  { word: "Tore it off, at tempo", base: "tear off", translation: "节奏分毫不乱地流畅脱口而出。", category: "Richard Powers 深度全量词汇", context: "", example: "He tore it off, at tempo." },
+  { word: "Chill", base: "chill", translation: "高智商碾压使人不寒而栗。", category: "Richard Powers 深度全量词汇", context: "", example: "It chilled me." },
+  { word: "Displacement", base: "displacement", translation: "失去归属感的流离失所错位感。", category: "Richard Powers 深度全量词汇", context: "", example: "Once she claimed her birthright, displacement became total." },
+  { word: "Pygmalion effect", base: "Pygmalion", translation: "皮格马利翁效应（隐喻AI训练）。", category: "Richard Powers 深度全量词汇", context: "", example: "（背景典故总结，贯穿全书）" },
+  { word: "Cholera ward & Dung beetles", base: "ward", translation: "像霍乱病房周围的屎壳郎一样。", category: "Richard Powers 深度全量词汇", context: "", example: "like dung beetles around a cholera ward." },
+  { word: "Imported palms", base: "import", translation: "人工移植的造作棕榈树。", category: "Richard Powers 深度全量词汇", context: "", example: "a stand of palms imported into the Sonora." },
+  { word: "Chain-dragging on its own economic exhaust pipe", base: "drag", translation: "被破烂的经济排气管拖累得摩擦前行。", category: "Richard Powers 深度全量词汇", context: "", example: "chain-dragging on its own economic exhaust pipe." },
+  { word: "The little Frank girl's Dear Kitty", base: "Frank", translation: "《安妮日记》著名的致基蒂开头。", category: "Richard Powers 深度全量词汇", context: "", example: "The little Frank girl's Dear Kitty." },
+  { word: "Bourgeois queendoms", base: "queendom", translation: "小资产阶级情调的女王国（讽刺荷兰）。", category: "Richard Powers 深度全量词汇", context: "", example: "You and your precious bourgeois queendoms." },
+  { word: "The Anatomy Lesson of Dr. Tulp", base: "anatomy", translation: "伦勃朗名画《解剖学课》。", category: "Richard Powers 深度全量词汇", context: "", example: "would use The Anatomy Lesson of Dr. Tulp as a canvas roof patch..." },
+  { word: "Jump the schooner of state", base: "jump", translation: "半推半就抛弃祖国之船。", category: "Richard Powers 深度全量词汇", context: "", example: "halfheartedly jumped the schooner of state." },
+  { word: "Expectorant Low German dialect", base: "expectorant", translation: "像咳痰一样的低地德语方言。", category: "Richard Powers 深度全量词汇", context: "", example: "that expectorant Low German dialect?" },
+  { word: "Secret low country of the heart", base: "secret", translation: "每个人内心真正的精神故乡。", category: "Richard Powers 深度全量词汇", context: "", example: "Everyone has a secret low country of the heart..." },
+  { word: "accumulation of ripples", base: "ripple", translation: "微小事件叠加的命运涟漪。", category: "Richard Powers 深度全量词汇", context: "", example: "missed hers by a year and an accumulation of ripples." },
+  { word: "tried to leap the tracks of desire", base: "leap", translation: "完美灵感试图狂野跃出欲望轨道。", category: "Richard Powers 深度全量词汇", context: "", example: "tried to leap the tracks of desire." },
+  { word: "infesting like a medfly slipped past customs", base: "infest", translation: "像漏网偷渡的海关果蝇在内脏寄生。", category: "Richard Powers 深度全量词汇", context: "", example: "infesting my insides like a medfly slipped past customs." },
+  { word: "gloat", base: "gloat", translation: "幸灾乐祸地得意。", category: "Richard Powers 深度全量词汇", context: "", example: "He gloated." },
+  { word: "at cost", base: "cost", translation: "倒贴成本价。", category: "Richard Powers 深度全量词汇", context: "", example: "would have given him the complete works at cost..." },
+  { word: "tinker", base: "tinker", translation: "补锅匠。", category: "Richard Powers 深度全量词汇", context: "", example: "sounds like something you'd use to pay the tinker..." },
+  { word: "cobbler", base: "cobbler", translation: "鞋匠。", category: "Richard Powers 深度全量词汇", context: "", example: "or cobbler." },
+  { word: "shove", base: "shove", translation: "粗鲁地推。", category: "Richard Powers 深度全量词汇", context: "", example: "I shoved the spare chair at him." },
+  { word: "relish", base: "relish", translation: "享受、喜欢。", category: "Richard Powers 深度全量词汇", context: "", example: "I didn't relish the idea of an insult match..." },
+  { word: "color travelogue", base: "travelogue", translation: "异国情调的旅行见闻。", category: "Richard Powers 深度全量词汇", context: "", example: "Not just the exotic bits, the color travelogue." },
+  { word: "mother tongue", base: "tongue", translation: "母语。", category: "Richard Powers 深度全量词汇", context: "", example: "I meant to retire my whole mother tongue." },
+  { word: "stride", base: "stride", translation: "大步走。", category: "Richard Powers 深度全量词汇", context: "", example: "He stood and strode to my whiteboard." },
+  { word: "crikey", base: "crikey", translation: "老天爷啊（惊叹）。", category: "Richard Powers 深度全量词汇", context: "", example: "And crikey! How do you deal with that syntax?" },
+  { word: "note-perfect", base: "note-perfect", translation: "惟妙惟肖、分毫不差。", category: "Richard Powers 深度全量词汇", context: "", example: "His burlesque was note-perfect." },
+  { word: "switch over", base: "switch over", translation: "切换语言。", category: "Richard Powers 深度全量词汇", context: "", example: "even if he switched over." },
+  { word: "parody", base: "parody", translation: "滑稽模仿。", category: "Richard Powers 深度全量词汇", context: "", example: "Could a cognitive linguist parody a language he didn't speak?" },
+  { word: "dank", base: "dank", translation: "阴冷潮湿的。", category: "Richard Powers 深度全量词汇", context: "", example: "in a dank Chicago suburban basement..." },
+  { word: "account", base: "account", translation: "描述、故事。", category: "Richard Powers 深度全量词汇", context: "", example: "A child's account of the flood..." },
+  { word: "ravage", base: "ravage", translation: "严重破坏、蹂躏。", category: "Richard Powers 深度全量词汇", context: "", example: "the flood that ravaged Zeeland..." },
+  { word: "camp", base: "camp", translation: "在屋顶安营扎寨避难。", category: "Richard Powers 深度全量词汇", context: "", example: "camped everywhere on top of step-gabled houses..." },
+  { word: "step-gabled", base: "step-gabled", translation: "阶梯状山墙。", category: "Richard Powers 深度全量词汇", context: "", example: "camped everywhere on top of step-gabled houses..." },
+  { word: "The Loop", base: "The Loop", translation: "芝加哥卢普区。", category: "Richard Powers 深度全量词汇", context: "", example: "sixty-seven blocks north of the Loop..." },
+  { word: "lashing fast", base: "lash", translation: "牢牢死死地系住/构建。", category: "Richard Powers 深度全量词汇", context: "", example: "lashing fast another imaginary Netherlands altogether." },
+  { word: "bits and pieces", base: "bit", translation: "零零碎碎。", category: "Richard Powers 深度全量词汇", context: "", example: "Bits and pieces, anyway." },
+  { word: "klein", base: "klein", translation: "荷兰语“小”。", category: "Richard Powers 深度全量词汇", context: "", example: "Nederland is een klein land." },
+  { word: "minuscule", base: "minuscule", translation: "极小的、微不足道的。", category: "Richard Powers 深度全量词汇", context: "", example: "A minuscule country..." },
+  { word: "shrapnel", base: "shrapnel", translation: "炮弹弹片。", category: "Richard Powers 深度全量词汇", context: "", example: "Dutch was a shrapnel wound." },
+  { word: "age", base: "age", translation: "使人沧桑变老。", category: "Richard Powers 深度全量词汇", context: "", example: "Each syllable aged me." },
+  { word: "kill off", base: "kill off", translation: "彻底抹除。", category: "Richard Powers 深度全量词汇", context: "", example: "whatever my next book succeeded in killing off." },
+  { word: "three variables", base: "variable", translation: "理科生傲慢的三个变量。", category: "Richard Powers 深度全量词汇", context: "", example: "the world outside his three variables..." },
+  { word: "condescension", base: "condescension", translation: "居高临下的傲慢态度。", category: "Richard Powers 深度全量词汇", context: "", example: "worth no more than brilliant condescension." },
+  { word: "deft switchboard cables", base: "cable", translation: "灵巧的旧式电话接线板线缆。", category: "Richard Powers 深度全量词汇", context: "", example: "connecting the hollow boxes with deft switchboard cables." },
+  { word: "harp on", base: "harp on", translation: "喋喋不休地谈论。", category: "Richard Powers 深度全量词汇", context: "", example: "If you insist on harping on the Dutch..." },
+  { word: "Moluccan separatists", base: "separatist", translation: "摩鹿加分离主义者。", category: "Richard Powers 深度全量词汇", context: "", example: "earnest Moluccan separatists..." },
+  { word: "hijack a passenger train", base: "hijack", translation: "劫持客运火车事件。", category: "Richard Powers 深度全量词汇", context: "", example: "hijack a passenger train from Amsterdam..." },
+  { word: "peace offering", base: "offer", translation: "求和的礼物。", category: "Richard Powers 深度全量词汇", context: "", example: "peace offering came the next week..." },
+  { word: "much-thumbed-through", base: "thumb", translation: "被翻阅过无数次的。", category: "Richard Powers 深度全量词汇", context: "", example: "He left me a much-thumbed-through short-story collection." },
+  { word: "ravishing", base: "ravish", translation: "令人陶醉的绝美细节。", category: "Richard Powers 深度全量词汇", context: "", example: "a young husband and wife kill themselves in ravishing detail." },
+  { word: "skimmed", base: "skim", translation: "快速略读。", category: "Richard Powers 深度全量词汇", context: "", example: "As I skimmed the astonishing transcript..." },
+  { word: "trashing", base: "trash", translation: "贬低侮辱。", category: "Richard Powers 深度全量词汇", context: "", example: "I wondered if he was trashing me yet again." },
+  { word: "honor-besmirched", base: "besmirch", translation: "名誉扫地的。", category: "Richard Powers 深度全量词汇", context: "", example: "A suicide manual for the honor-besmirched author." },
+  { word: "anthology", base: "anthology", translation: "作品选集。", category: "Richard Powers 深度全量词汇", context: "", example: "Not that I needed any anthology piece..." },
+  { word: "dragging my heels", base: "drag", translation: "拖延磨蹭。", category: "Richard Powers 深度全量词汇", context: "", example: "I was just dragging my heels until New York’s deadline." },
+  { word: "the List", base: "list", translation: "纽约畅销书排行榜。", category: "Richard Powers 深度全量词汇", context: "", example: "put me, however briefly, on what my editor referred to as the List." },
+  { word: "bleak", base: "bleak", translation: "凄凉荒凉的。", category: "Richard Powers 深度全量词汇", context: "", example: "My fourth was too bleak an interval..." },
+  { word: "cadence on", base: "cadence", translation: "以休止符收尾。", category: "Richard Powers 深度全量词汇", context: "", example: "too bleak an interval to cadence on." },
+  { word: "The Blitz", base: "Blitz", translation: "纳粹对伦敦大轰炸。", category: "Richard Powers 深度全量词汇", context: "", example: "The Blitz wasn’t going to have the last word in my fiction..." },
+  { word: "send-off", base: "send-off", translation: "告别饯行作。", category: "Richard Powers 深度全量词汇", context: "", example: "I knew only that I wanted to write a send-off." },
+  { word: "ordained", base: "ordain", translation: "仿佛神圣命中注定的。", category: "Richard Powers 深度全量词汇", context: "", example: "The line felt ordained..." },
+  { word: "azure", base: "azure", translation: "蔚蓝色。", category: "Richard Powers 深度全量词汇", context: "", example: "as liberating as October azure." },
+  { word: "stalled", base: "stall", translation: "抛锚停滞。", category: "Richard Powers 深度全量词汇", context: "", example: "I was stalled at departure..." },
+  { word: "nagged", base: "nag", translation: "不断纠缠烦扰。", category: "Richard Powers 深度全量词汇", context: "", example: "The words nagged at me..." },
+  { word: "nursery refrain", base: "refrain", translation: "洗脑的儿歌叠句。", category: "Richard Powers 深度全量词汇", context: "", example: "like a nursery refrain." },
+  { word: "unsponsored", base: "unsponsored", translation: "无来由的、不是自己的大脑创造的。", category: "Richard Powers 深度全量词汇", context: "", example: "It felt so unsponsored, I could not have invented it." },
+  { word: "bandwidths", base: "bandwidth", translation: "极客搜索消耗网络带宽。", category: "Richard Powers 深度全量词汇", context: "", example: "I searched the bandwidths..." },
+  { word: "jump start", base: "jump start", translation: "搭电启动灵感。", category: "Richard Powers 深度全量词汇", context: "", example: "postponing further the hopes of a jump start." },
+  { word: "Boolean", base: "Boolean", translation: "布尔逻辑。", category: "Richard Powers 深度全量词汇", context: "", example: "I did Boolean searches..." },
+  { word: "ANDed", base: "AND", translation: "极客搜索的连结。", category: "Richard Powers 深度全量词汇", context: "", example: "ANDed together..." },
+  { word: "conceivable", base: "conceivable", translation: "可以想象的。", category: "Richard Powers 深度全量词汇", context: "", example: "I substituted every conceivable synonym..." },
+  { word: "hyperlinked thesauri", base: "thesaurus", translation: "电子同义词词典。", category: "Richard Powers 深度全量词汇", context: "", example: "verbal almosts piped in from hyperlinked thesauri." },
+  { word: "hairline decampment", base: "decampment", translation: "发际线撤退（戏谑脱发）。", category: "Richard Powers 深度全量词汇", context: "", example: "signs of recent hairline decampment..." },
+  { word: "heft", base: "heft", translation: "遗忘的美好重量。", category: "Richard Powers 深度全量词汇", context: "", example: "Soon I would forget even the lovely heft of forgetting." },
+  { word: "The command to picture", base: "command", translation: "那个想象的指令。", category: "Richard Powers 深度全量词汇", context: "", example: "The command to picture was... heading south." },
+  { word: "PA (Public Address system)", base: "PA", translation: "火车站公共广播。", category: "Richard Powers 深度全量词汇", context: "", example: "The line sounded its last call over the PA..." },
+  { word: "Transalpine", base: "Transalpine", translation: "跨越阿尔卑斯山的城际列车。", category: "Richard Powers 深度全量词汇", context: "", example: "a Transalpine Intercity just pulling out of the station." },
+  { word: "Everybody's a critic", base: "Everybody's a critic", translation: "人人都是批评家。", category: "Richard Powers 深度全量词汇", context: "", example: "“Everybody’s a critic.”" },
+  { word: "resent", base: "resent", translation: "抱怨、怨恨。", category: "Richard Powers 深度全量词汇", context: "", example: "Much to resent about your line of work." },
+  { word: "drifted", base: "drift", translation: "漂移。", category: "Richard Powers 深度全量词汇", context: "", example: "The remainders had drifted together..." },
+  { word: "scripted", base: "script", translation: "被提前写进剧本里的宿命感。", category: "Richard Powers 深度全量词汇", context: "", example: "what I was already scripted to say." },
+  { word: "King of the cats", base: "king", translation: "曾经文化圈的绝对霸主。", category: "Richard Powers 深度全量词汇", context: "", example: "You folks are king of the cats, aren’t you?" },
+  { word: "Lit crit", base: "Lit crit", translation: "文学批评（Literary Criticism）。", category: "Richard Powers 深度全量词汇", context: "", example: "It’s all movies and lit crit now." },
+  { word: "defrocked", base: "defrock", translation: "被剥夺神职跌下神坛的。", category: "Richard Powers 深度全量词汇", context: "", example: "“Well, my defrocked friend.”" },
+  { word: "flock", base: "flock", translation: "群（鸟群聚集）。", category: "Richard Powers 深度全量词汇", context: "", example: "Flocks gathered and wheeled in V’s of retreat." },
+  { word: "turbine", base: "turbine", translation: "涡轮机。", category: "Richard Powers 深度全量词汇", context: "", example: "my blast of turbine steam logged its nightly reprimand." },
+  { word: "libel convention", base: "libel convention", translation: "诽谤罪研讨会（比喻极其死抠字眼的场合）。", category: "Richard Powers 深度全量词汇", context: "", example: "Dr. Hartrick, I figured, was a kind soul, but as literal as a lawyer giving the keynote at a libel convention." },
+  { word: "side with", base: "side with", translation: "站在……一边，支持。", category: "Richard Powers 深度全量词汇", context: "", example: "“Rhesus pieces?” I sided with Ram." },
+  { word: "lesion", base: "lesion", translation: "使…产生病变、受到损伤。", category: "Richard Powers 深度全量词汇", context: "", example: "I felt slightly lesioned myself." },
+  { word: "ID", base: "ID", translation: "进行身份识别/鉴定（指实验中的辨认）。", category: "Richard Powers 深度全量词汇", context: "", example: "We’d do two hours of IDs." },
+  { word: "amount to", base: "amount to", translation: "等同于、有……的价值（通常用于否定句指“没多大出息”）。", category: "Richard Powers 深度全量词汇", context: "", example: "But they've never amounted to much in the novel-writing department, have they?" },
+  { word: "cortical knot", base: "cortical knot", translation: "大脑皮层的死结（比喻句法极度烧脑）。", category: "Richard Powers 深度全量词汇", context: "", example: "...that one's brain in ever more excruciatingly elaborate cortical knots trivially can tie." },
+  { word: "round tones", base: "round tones", translation: "圆润、字正腔圆的语调。", category: "Richard Powers 深度全量词汇", context: "", example: "When I next saw Lentz by accident in the corridors outside an unavoidable Center obligation, he greeted me in round tones." },
+  { word: "mask", base: "mask", translation: "掩饰、戴上面具。", category: "Richard Powers 深度全量词汇", context: "", example: "He’d learned to mask it early." },
+  { word: "repertoire", base: "repertoire", translation: "全部曲目、储备库（指可用的词汇或行为库）。", category: "Richard Powers 深度全量词汇", context: "", example: "A small fraction of the available repertoire." },
+  { word: "cremate", base: "cremate", translation: "火化。", category: "Richard Powers 深度全量词汇", context: "", example: "As if McGee had been cremated through her own carelessness." },
+  { word: "pitch", base: "pitch", translation: "推销、游说（指她说话的语调和意图）。", category: "Richard Powers 深度全量词汇", context: "", example: "And yet her each pitch denied its own need to exist as anything at all but compassionate sound." },
+  { word: "condolence", base: "condolence", translation: "哀悼、慰问。", category: "Richard Powers 深度全量词汇", context: "", example: "The lone condolence ever allotted." },
+  { word: "allot", base: "allot", translation: "分配、拨给。", category: "Richard Powers 深度全量词汇", context: "", example: "The lone condolence ever allotted." },
+  { word: "retrace", base: "retrace", translation: "原路返回、追溯。", category: "Richard Powers 深度全量词汇", context: "", example: "Forever since I had traced, in mental route, the trip that would not be mine to retrace much longer." },
+  { word: "cluster", base: "cluster", translation: "聚集、簇拥在一起。", category: "Richard Powers 深度全量词汇", context: "", example: "His name clustered with lots of recalcitrant Slavic consonants." },
+  { word: "particular", base: "particular", translation: "具体的细节、详细资料。", category: "Richard Powers 深度全量词汇", context: "", example: "But I did not know his particulars." },
+  { word: "transient", base: "transient", translation: "短暂的、过客般的。", category: "Richard Powers 深度全量词汇", context: "", example: "His home, however transient, was not Chicago per se but that emulation of Krakéw..." },
+  { word: "preempt", base: "preempt", translation: "先发制人、抢先阻止。", category: "Richard Powers 深度全量词汇", context: "", example: "One married young in those days, quick and willfully, to preempt just what happened to him." },
+  { word: "resolve", base: "resolve", translation: "解决、化解。", category: "Richard Powers 深度全量词汇", context: "", example: "What the close of the curent book did not resolve spilled over into the next." },
+  { word: "spill over", base: "spill over", translation: "溢出、波及到（下一部作品）。", category: "Richard Powers 深度全量词汇", context: "", example: "What the close of the curent book did not resolve spilled over into the next." },
+  { word: "return leg", base: "return leg", translation: "返程段（旅行的归途）。", category: "Richard Powers 深度全量词汇", context: "", example: "That sentence, the return leg of the northern line, tried to leap the tracks of desire." },
+  { word: "hitch on", base: "hitch on", translation: "挂靠、搭便车。", category: "Richard Powers 深度全量词汇", context: "", example: "I was the free rider, allowed to hitch on to my phrase’s urgent run provided I kept the throttle open and the boiler stoked." },
+  { word: "stoke", base: "stoke", translation: "给……添加燃料、拨旺（炉火）。", category: "Richard Powers 深度全量词汇", context: "", example: "I was the free rider, allowed to hitch on to my phrase’s urgent run provided I kept the throttle open and the boiler stoked." },
+  { word: "provide", base: "provide", translation: "提供（句中 provided 意为“只要/以此为条件”）。", category: "Richard Powers 深度全量词汇", context: "", example: "I was the free rider, allowed to hitch on to my phrase’s urgent run provided I kept the throttle open and the boiler stoked." },
+  { word: "offprint", base: "offprint", translation: "抽印本、单行本。", category: "Richard Powers 深度全量词汇", context: "", example: "What I need is offprints." },
+  { word: "pernicious", base: "pernicious", translation: "有害的、极其恶性的。", category: "Richard Powers 深度全量词汇", context: "", example: "The things were pernicious: just enough adhesive for a temporary stick." },
+  { word: "adhesive", base: "adhesive", translation: "黏合剂、胶水。", category: "Richard Powers 深度全量词汇", context: "", example: "The things were pernicious: just enough adhesive for a temporary stick." },
+  { word: "cathode-ray tube", base: "cathode-ray tube", translation: "阴极射线管（代指老式电视机）。", category: "Richard Powers 深度全量词汇", context: "", example: "Don’t know about your mother, but mine used to surface-mount me to the cathode-ray tube." },
+  { word: "ration", base: "ration", translation: "定量配给。", category: "Richard Powers 深度全量词汇", context: "", example: "We were strictly rationed." },
+  { word: "the set", base: "the set", translation: "电视机（老式用法）。", category: "Richard Powers 深度全量词汇", context: "", example: "The last children in America who had to ask to turn on the set." },
+  { word: "intervention", base: "intervention", translation: "干预（尤指强制精神治疗干预）。", category: "Richard Powers 深度全量词汇", context: "", example: "Do we need to call the pros? Start the intervention?" },
+  { word: "ease to life", base: "ease to life", translation: "缓缓启动、恢复生机。", category: "Richard Powers 深度全量词汇", context: "", example: "The train eases to life." },
+  { word: "stoke up", base: "stoke up", translation: "烧旺、加满燃料运转起来。", category: "Richard Powers 深度全量词汇", context: "", example: "It stokes up, unfolding itself along that first great curve, and leaving becomes real." },
+  { word: "taunt", base: "taunt", translation: "嘲弄、奚落。", category: "Richard Powers 深度全量词汇", context: "", example: "it left something chest-tightening behind, tracking out to the taunting horizon." },
+{ word: "magazine outfit", base: "magazine outfit", translation: "杂志社 / 机构 / 公司。", category: "Richard Powers 深度全量词汇", context: "", example: "My computer magazine outfit sat inside a rustic steel-and-glass exoskeleton..." },
+  { word: "rustic", base: "", translation: "粗朴的、带有工业复古风的。", category: "Richard Powers 深度全量词汇", context: "", example: "My computer magazine outfit sat inside a rustic steel-and-glass exoskeleton..." },
+  { word: "steel-and-glass", base: "", translation: "钢铁玻璃结构的（现代主义建筑特色）。", category: "Richard Powers 深度全量词汇", context: "", example: "My computer magazine outfit sat inside a rustic steel-and-glass exoskeleton..." },
+  { word: "exoskeleton", base: "", translation: "外骨骼；（指建筑）外部暴露的钢结构。", category: "Richard Powers 深度全量词汇", context: "", example: "My computer magazine outfit sat inside a rustic steel-and-glass exoskeleton..." },
+  { word: "antiquated", base: "", translation: "陈旧的、显得过时的。", category: "Richard Powers 深度全量词汇", context: "", example: "...that made the surrounding buildings look even more antiquated." },
+  { word: "cityscape", base: "", translation: "城市景观。", category: "Richard Powers 深度全量词汇", context: "", example: "The cityscape was something an American postprimitive might do..." },
+  { word: "postprimitive", base: "", translation: "后原始主义者（文学造词）。", category: "Richard Powers 深度全量词汇", context: "", example: "The cityscape was something an American postprimitive might do, a nostalgic century from now." },
+  { word: "in advance retrospective", base: "in advance retrospective", translation: "提前怀旧（把现在当作未来去回忆的文学表达）。", category: "Richard Powers 深度全量词汇", context: "", example: "C. and I lived it in advance retrospective." },
+  { word: "prow", base: "", translation: "船头（诗化表达：在寒冬前沿行走）。", category: "Richard Powers 深度全量词汇", context: "", example: "We took long walks along the prow of winter..." },
+  { word: "reconnoiter", base: "reconnoiter", translation: "侦察、观察、勘察。", category: "Richard Powers 深度全量词汇", context: "", example: "We took long walks... reconnoitering, registering everything." },
+  { word: "register", base: "register", translation: "感知、记录到。", category: "Richard Powers 深度全量词汇", context: "", example: "We took long walks... reconnoitering, registering everything." },
+  { word: "ingest", base: "ingest", translation: "吞入；（感官上）沉浸吸收。", category: "Richard Powers 深度全量词汇", context: "", example: "We ingested the ochers and burnt umbers..." },
+  { word: "ocher", base: "", translation: "赭黄色。", category: "Richard Powers 深度全量词汇", context: "", example: "We ingested the ochers and burnt umbers..." },
+  { word: "burnt umber", base: "", translation: "焦褐色（颜料名）。", category: "Richard Powers 深度全量词汇", context: "", example: "We ingested the ochers and burnt umbers..." },
+  { word: "tint", base: "", translation: "色调、浅色。", category: "Richard Powers 深度全量词汇", context: "", example: "...the tints that tipped us to the fact that the present was far stranger than it let on." },
+  { word: "tip", base: "tip", translation: "暗示、让人意识到。", category: "Richard Powers 深度全量词汇", context: "", example: "...the tints that tipped us to the fact that the present was far stranger than it let on." },
+  { word: "speak in tongues", base: "speak in tongues", translation: "胡言乱语（原指宗教狂热中的“说灵语”）。", category: "Richard Powers 深度全量词汇", context: "", example: "They spoke in tongues, human or otherwise, debating themselves or whoever else would listen." },
+  { word: "soiled", base: "", translation: "弄脏的、脏旧的。", category: "Richard Powers 深度全量词汇", context: "", example: "They handed the two of us soiled pamphlets covered in Carolingian minuscule." },
+  { word: "pamphlet", base: "", translation: "小册子、传单。", category: "Richard Powers 深度全量词汇", context: "", example: "They handed the two of us soiled pamphlets covered in Carolingian minuscule." },
+  { word: "Carolingian minuscule", base: "", translation: "卡洛林小草书（中世纪字体）。", category: "Richard Powers 深度全量词汇", context: "", example: "They handed the two of us soiled pamphlets covered in Carolingian minuscule." },
+  { word: "slouch", base: "slouch", translation: "无精打采地耷拉着、瘫坐。", category: "Richard Powers 深度全量词汇", context: "", example: "Or they slouched asleep, grease- and blood-caked..." },
+  { word: "grease", base: "", translation: "油污。", category: "Richard Powers 深度全量词汇", context: "", example: "Or they slouched asleep, grease- and blood-caked..." },
+  { word: "blood-caked", base: "", translation: "血污结块覆盖的。", category: "Richard Powers 深度全量词汇", context: "", example: "Or they slouched asleep, grease- and blood-caked..." },
+  { word: "sleek", base: "", translation: "光滑现代的、流线型的。", category: "Richard Powers 深度全量词汇", context: "", example: "...in the back of sleek light rails..." },
+  { word: "light rail", base: "", translation: "轻轨。", category: "Richard Powers 深度全量词汇", context: "", example: "...in the back of sleek light rails..." },
+  { word: "ride out to", base: "ride out to", translation: "坐车一路到……", category: "Richard Powers 深度全量词汇", context: "", example: "...riding out to the docklands district of progress’s trade fair." },
+  { word: "docklands", base: "", translation: "港口工业区。", category: "Richard Powers 深度全量词汇", context: "", example: "...riding out to the docklands district of progress’s trade fair." },
+  { word: "windchill", base: "", translation: "风寒、体感温度。", category: "Richard Powers 深度全量词汇", context: "", example: "On nights when the windchill permitted..." },
+  { word: "interplanetary dark", base: "", translation: "星际般的黑暗（文学表达）。", category: "Richard Powers 深度全量词汇", context: "", example: "...when the bitterness of interplanetary dark toyed with its food by easing a degree..." },
+  { word: "toy with", base: "toy with", translation: "戏弄（像猫玩猎物一样，拟人化）。", category: "Richard Powers 深度全量词汇", context: "", example: "...when the bitterness of interplanetary dark toyed with its food by easing a degree..." },
+  { word: "ease", base: "ease", translation: "缓和、减轻（指寒意回暖一度）。", category: "Richard Powers 深度全量词汇", context: "", example: "...when the bitterness of interplanetary dark toyed with its food by easing a degree..." },
+  { word: "cut across", base: "cut across", translation: "穿过、抄近路穿行。", category: "Richard Powers 深度全量词汇", context: "", example: "I cut across the public plots..." },
+  { word: "public plot", base: "", translation: "公共小块土地、社区耕地。", category: "Richard Powers 深度全量词汇", context: "", example: "I cut across the public plots, the ancient Victory Gardens..." },
+  { word: "Victory Gardens", base: "", translation: "胜利菜园（二战时期民众种菜的文化概念）。", category: "Richard Powers 深度全量词汇", context: "", example: "I cut across the public plots, the ancient Victory Gardens, all their victories lost, forgotten, or squandered." },
+  { word: "squander", base: "squander", translation: "挥霍、浪费。", category: "Richard Powers 深度全量词汇", context: "", example: "I cut across the public plots, the ancient Victory Gardens, all their victories lost, forgotten, or squandered." },
+  { word: "bent", base: "", translation: "弯腰的、弯曲的。", category: "Richard Powers 深度全量词汇", context: "", example: "There, bent women tilled the rows in windup planetarium ellipses." },
+  { word: "till", base: "till", translation: "耕种（田垄）。", category: "Richard Powers 深度全量词汇", context: "", example: "There, bent women tilled the rows in windup planetarium ellipses." },
+  { word: "windup", base: "", translation: "上发条的（比喻机械般的动作）。", category: "Richard Powers 深度全量词汇", context: "", example: "There, bent women tilled the rows in windup planetarium ellipses." },
+  { word: "planetarium", base: "", translation: "天文馆（此处修饰天体模型，形容轨迹规律）。", category: "Richard Powers 深度全量词汇", context: "", example: "There, bent women tilled the rows in windup planetarium ellipses." },
+  { word: "ellipse", base: "", translation: "椭圆轨道。", category: "Richard Powers 深度全量词汇", context: "", example: "There, bent women tilled the rows in windup planetarium ellipses." },
+  { word: "war effort", base: "", translation: "战争动员、战争努力。", category: "Richard Powers 深度全量词汇", context: "", example: "...waiting for spring to plant a new crop for next year’s war effort." },
+  { word: "fusty", base: "", translation: "发霉的、陈腐的。", category: "Richard Powers 深度全量词汇", context: "", example: "Over the fusty expressway bridge..." },
+  { word: "expressway", base: "", translation: "高速路。", category: "Richard Powers 深度全量词汇", context: "", example: "Over the fusty expressway bridge..." },
+  { word: "home stretch", base: "home stretch", translation: "最后阶段、最后一段路。", category: "Richard Powers 深度全量词汇", context: "", example: "I headed into the home stretch..." },
+  { word: "close in on", base: "close in on", translation: "接近。", category: "Richard Powers 深度全量词汇", context: "", example: "...closing in on the place C. and I had made for each other, from out of total accident." },
+  { word: "from out of total accident", base: "from out of total accident", translation: "完全偶然地（文学表达）。", category: "Richard Powers 深度全量词汇", context: "", example: "...closing in on the place C. and I had made for each other, from out of total accident." },
+  { word: "hole up", base: "hole up", translation: "像冬眠一样蛰伏、躲藏起来。", category: "Richard Powers 深度全量词汇", context: "", example: "It holes up awhile, stock-still..." },
+  { word: "stock-still", base: "stock-still", translation: "绝对静止的、纹丝不动的。", category: "Richard Powers 深度全量词汇", context: "", example: "It holes up awhile, stock-still..." },
+  { word: "slam out", base: "slam out", translation: "猛然爆发、夺门而出。", category: "Richard Powers 深度全量词汇", context: "", example: "...slams out one afternoon to play catch-up ball." },
+  { word: "play catch-up ball", base: "play catch-up ball", translation: "拼命追赶进度（体育俚语，形容衰老突然加速，让人瞬间变老）。", category: "Richard Powers 深度全量词汇", context: "", example: "...slams out one afternoon to play catch-up ball." },
+{ 
+    word: "lurch", 
+    base: "lurch", 
+    translation: "【本意】（车、船或醉汉）突然倾斜、猛烈摇晃着向前窜。【深度解析】在这里被作者极具画面感地引申为：毫无防备地突然袭来。它写出了衰老并非匀速流逝，而是一种令人措手不及、极具暴力感的失控体感。", 
+    category: "Richard Powers 深度全量词汇", 
+    context: "", 
+    example: "Age lurches in fits and starts." 
+  },
+  { 
+    word: "in fits and starts", 
+    base: "in fits and starts", 
+    translation: "断断续续地、一阵一阵地、走走停停地（固定搭配）。【深度解析】fit不是指“合适”，而是指“突发的一阵”（如 a fit of coughing 猛烈的咳嗽）；start指“猛然的启动”。画面感极强：像一辆快抛锚的老爷车，刚发动往前窜了一小段就熄火，然后又猛地往前冲一段。结合原句，完美刻画了衰老蛰伏许久后猛然降临的恐怖节奏。【日常例句】1. The project is progressing in fits and starts because of funding issues. (项目进展断断续续) 2. He writes in fits and starts. (他写东西一阵一阵的/三天打鱼两天晒网)。", 
+    category: "Richard Powers 深度全量词汇", 
+    context: "", 
+    example: "Age lurches in fits and starts..." 
+  },
+  {
+    word: "take such toll",
+    base: "take a toll on",
+    translation: "造成破坏、带来严重的不良影响（或情感消耗）。",
+    category: "Richard Powers 深度全量词汇",
+    context: "“The ‘we’ that would take such toll on her.” 这里的 “we” 指代的是“我们”这段关系。这是一种极度悲伤的倒叙视角。男主在事后回首，意识到正是这段亲密关系，后来让她付出了巨大的情感代价，把她消耗得筋疲力尽。",
+    example: "The “we” that would take such toll on her."
+  },
+  {
+    word: "hurled",
+    base: "hurl",
+    translation: "用力投掷、猛冲。",
+    category: "Richard Powers 深度全量词汇",
+    context: "画面感极强。这不仅是“走”或“跑”，而是带着一种年轻、疯狂、不顾一切的势头，两人在寒冷的冬夜里“把自己抛掷出去 / 猛冲进”黑暗中。",
+    example: "I picked it up somewhere along the length of that greenway down which we hurled ourselves..."
+  },
+  {
+    word: "parka-packed",
+    base: "parka-packed",
+    translation: "裹得严严实实的（派克大衣+塞满）。",
+    category: "Richard Powers 深度全量词汇",
+    context: "这是一个极具画面感的合成词。两人在严寒的冬天去北极圈般的黑暗中，把自己裹得像两颗圆滚滚的粽子，塞在厚重的防寒大衣里。",
+    example: "...a couple of parka-packed, manic Polacks making tracks into the Arctic dark."
+  },
+  {
+    word: "manic Polacks",
+    base: "manic Polacks",
+    translation: "狂躁的/极度兴奋的波兰人。",
+    category: "Richard Powers 深度全量词汇",
+    context: "结合前文提到的波尔卡舞（polka，源于波西米亚的欢快舞蹈）。两人在街上像两个疯狂兴奋的波兰人一样蹦蹦跳跳，带有自嘲和调侃的浪漫。",
+    example: "...a couple of parka-packed, manic Polacks making tracks into the Arctic dark."
+  },
+  {
+    word: "trig",
+    base: "trigonometry (trig)",
+    translation: "三角学、三角函数。",
+    category: "Richard Powers 深度全量词汇",
+    context: "纯粹的理科生浪漫！男主比 C. 高，但当两人躺在床上时，“三角函数/几何学”把他们变成了“相同的长度”。这是一种非常幽默、极客（geeky）的调情方式。",
+    example: "But when we lay like that, trig turned us to the same length."
+  },
+  {
+    word: "foregone conclusion",
+    base: "foregone conclusion",
+    translation: "预料之中的必然结局、早已注定的事。",
+    category: "Richard Powers 深度全量词汇",
+    context: "当他们在床上紧紧相拥完美契合时，接下来会发生什么是“必然的结局”（暗示两人顺理成章地发生亲密关系）。",
+    example: "A foregone conclusion."
+  },
+  {
+    word: "surprise inevitability",
+    base: "surprise inevitability",
+    translation: "令人惊喜的必然性（名词作定语）。",
+    category: "Richard Powers 深度全量词汇",
+    context: "这是一种矛盾修辞（Oxymoron）。surprise 在这里起修饰作用。故事的走向明明是必然的，但男主每次揭晓时，依然能给她带来巨大的惊喜。",
+    example: "The more C. felt its surprise inevitability, the keener she got for the next installment."
+  },
+  {
+    word: "installment",
+    base: "installment",
+    translation: "（连载故事的）一期、一集、一部分。",
+    category: "Richard Powers 深度全量词汇",
+    context: "男主在为 C. 写故事，他把每一章节像连载小说一样读给她听。她对“下一集”（next installment）充满了渴望。",
+    example: "The more C. felt its surprise inevitability, the keener she got for the next installment."
+  },
+  {
+    word: "raadsel",
+    base: "raadsel",
+    translation: "谜题（荷兰语，等同于 riddle）。",
+    category: "Richard Powers 深度全量词汇",
+    context: "男主为了讨好她，甚至在文本里穿插她母语（C. 是荷兰裔）的文化密码。每一个叙事谜题，都是一个 mental raadsel（智力/心理层面的解谜）。",
+    example: "Each narrative riddle, each mental raadsel was an awkward, tenderfoot bow I tied for her..."
+  },
+  {
+    word: "tenderfoot",
+    base: "tenderfoot",
+    translation: "新手、生手。",
+    category: "Richard Powers 深度全量词汇",
+    context: "原指初到西部不适应的人。男主极其谦卑地把自己设置这些叙事谜题的动作，比喻成一个笨手笨脚的新手打的蝴蝶结。",
+    example: "Each narrative riddle, each mental raadsel was an awkward, tenderfoot bow I tied for her..."
+  },
+  {
+    word: "untying",
+    base: "untie",
+    translation: "解开。",
+    category: "Richard Powers 深度全量词汇",
+    context: "男主笨拙地打下叙事谜题的结，完全是为了享受看着她将其“解开”时的快乐。智性恋（sapiosexual）的顶级浪漫。",
+    example: "...for the pleasure of her untying."
+  },
+  {
+    word: "crammed",
+    base: "cram",
+    translation: "塞满、死记硬背地挤入。",
+    category: "Richard Powers 深度全量词汇",
+    context: "为了让她开心，男主把自己能记住的每一个老笑话，都死命地“塞进”了他的段落里，充满了讨好的意味。",
+    example: "I crammed my paragraphs full of every old joke I could remember."
+  },
+  {
+    word: "foyer",
+    base: "foyer",
+    translation: "门厅、休息室。",
+    category: "Richard Powers 深度全量词汇",
+    context: "空间隐喻：“the foyer of our joint life”。那本书见证了他们共同生活刚刚起步（门厅，象征入口和开端）时的思想共舞。",
+    example: "That book is the dance card of ideas we shared in the foyer of our joint life."
+  },
+  {
+    word: "ideational",
+    base: "ideational",
+    translation: "理念上的、思想上的。",
+    category: "Richard Powers 深度全量词汇",
+    context: "指两人在纯粹的精神和思想层面上的交流。",
+    example: "I wrote down only the steps themselves, the ideational dips and sways..."
+  },
+  {
+    word: "dips and sways",
+    base: "dip and sway",
+    translation: "下腰与摇摆（舞蹈固定搭配动作）。",
+    category: "Richard Powers 深度全量词汇",
+    context: "虽非词典里的死板成语，但在舞蹈术语中，这是极经典的固定搭配。作者用它隐喻两人在思想交流时的碰撞、起伏与交融。后面的 from 表明这些舞步“源自”那个夜晚。",
+    example: "...the ideational dips and sways from the course of that evening when C. was my one date..."
+  },
+  {
+    word: "flanked",
+    base: "flank",
+    translation: "在两侧护卫、位于…的两侧。",
+    category: "Richard Powers 深度全量词汇",
+    context: "极具空间感的动词。两人在一条两旁林立着树木或建筑的公园大道上缓慢漫步。",
+    example: "...a slow, deliberate stroll along the parkway that flanked the trolley tracks out to the suburbs."
+  },
+  {
+    word: "trolley tracks",
+    base: "trolley track",
+    translation: "有轨电车轨道。",
+    category: "Richard Powers 深度全量词汇",
+    context: "勾勒出了城市夜晚漫步的具体地理环境，他们沿着电车轨道一直走向郊区。",
+    example: "...a slow, deliberate stroll along the parkway that flanked the trolley tracks out to the suburbs."
+  },
+  {
+    word: "binding",
+    base: "bind (bind A to B)",
+    translation: "绑定、将...与...紧紧联系在一起。",
+    category: "Richard Powers 深度全量词汇",
+    context: "bind to 是固定搭配。在男主写的故事里，主角在阁楼发现的神秘文件，将他与一段未知的过去紧紧绑定在一起。",
+    example: "...to find mysterious papers up in the family attic binding him to an unknown past."
+  },
+  {
+    word: "expansive",
+    base: "expansive",
+    translation: "心胸开阔的、健谈的、感到放松并愿意倾吐心声的。",
+    category: "Richard Powers 深度全量词汇",
+    context: "在这里不是指面积广阔，而是指人的心理状态。那个关于寻根和移民过去的段落深深触动了 C.，让她卸下防备，充满了想要倾诉的情感，这才引出了后面“鸭子养大的小狗”的剖白。",
+    example: "The passage back left C. expansive."
+  },
+  { word: "flank-attack", base: "flank-attack", translation: "动词；侧翼包抄，从侧面突袭（男主在正经说话，C. 突然从侧面闹他）。", category: "Richard Powers 深度全量词汇", context: "", example: "She laughed and flank-attacked. “Come on, you. Let’s polka.”" },
+  { word: "coy", base: "coy", translation: "形容词；故作娇羞的，卖弄风情的，欲迎还拒的。", category: "Richard Powers 深度全量词汇", context: "", example: "“Don’t be afraid,” C. purred. She could be coy at times." },
+  { word: "stomp out", base: "stomp out", translation: "动词词组；重重地踩踏出节奏（指跳波尔卡舞）。", category: "Richard Powers 深度全量词汇", context: "", example: "She stomped it out for me." },
+  { word: "laughingstock", base: "laughingstock", translation: "名词；笑柄，受人嘲笑的人。", category: "Richard Powers 深度全量词汇", context: "", example: "I was comic, crippled, a laughingstock. But she stuck with me." },
+  { word: "wail", base: "wail", translation: "动词；嚎啕大哭。这里是男主自嘲像个草坪上的婴儿。", category: "Richard Powers 深度全量词汇", context: "", example: "“Put me out on the lawn and I'll wail'?”" },
+  { word: "prickling", base: "prickling", translation: "名词；刺痛，发痒（这里指男主要给 C. 挠痒痒）。", category: "Richard Powers 深度全量词汇", context: "", example: "“I'll give you prickling.”" },
+  { word: "brokerage", base: "brokerage", translation: "名词；证券经纪公司。", category: "Richard Powers 深度全量词汇", context: "", example: "A friend of mine from the computer world tipped C. to an opening. Wire operator in a brokerage." },
+  { word: "salve", base: "salve", translation: "动词/名词；抚慰，减轻（痛苦）；药膏。这里指抚慰她的自我价值感。", category: "Richard Powers 深度全量词汇", context: "", example: "But something to engage her, salve the sense of self." },
+  { word: "wig out", base: "wig out", translation: "动词短语；发疯，情绪激动，抓狂（常接 on/over）。", category: "Richard Powers 深度全量词汇", context: "", example: "As I fed her, she entertained me with tales of eccentric colleagues, wigged out on Opportunity Loss." },
+  { word: "Opportunity Loss", base: "Opportunity Loss", translation: "名词词组；机会损失，机会成本（金融术语，指没赚到钱比亏钱还难受）。", category: "Richard Powers 深度全量词汇", context: "", example: "eccentric colleagues, wigged out on Opportunity Loss." },
+  { word: "quintessential", base: "quintessential", translation: "形容词；典型的，完美的，精髓的。", category: "Richard Powers 深度全量词汇", context: "", example: "Her accounts of that quintessential late-twentieth-century business delighted me." },
+  { word: "extract margin", base: "extract margin", translation: "动词词组；榨取利润空间/差价。", category: "Richard Powers 深度全量词汇", context: "", example: "The parasitic middlemen, extracting margin from the news feed..." },
+  { word: "reservoir", base: "reservoir", translation: "名词；水库，蓄水池。隐喻：人内心积蓄的情感和力量防线。", category: "Richard Powers 深度全量词汇", context: "", example: "It meant that our private reservoir, when face-to-face with the outside, is all we have that might help a little." },
+  { word: "pastiche", base: "pastiche", translation: "名词；拼凑的作品，大杂烩，模仿画。", category: "Richard Powers 深度全量词汇", context: "", example: "That book was no more than a structured pastiche of every report I’d ever heard, from C. or abroad." },
+  { word: "patchwork", base: "patchwork", translation: "名词；拼凑物，补丁。比喻东拼西凑的内容。", category: "Richard Powers 深度全量词汇", context: "", example: "All a patchwork to delight and distract her. One that by accident ate her alive." },
+  { word: "eat someone alive", base: "eat someone alive", translation: "动词词组；把某人生吞活剥了，彻底吞噬某人。", category: "Richard Powers 深度全量词汇", context: "", example: "One that by accident ate her alive." },
+  { word: "checkpoint", base: "checkpoint", translation: "名词；边境检查站，关卡（隐喻防备与隔阂）。", category: "Richard Powers 深度全量词汇", context: "", example: "Lovemaking stayed silent this time, skin more a checkpoint between us than a visa in." },
+  { word: "visa in", base: "visa in", translation: "名词词组；进入的签证/通行证（隐喻接纳与亲密）。", category: "Richard Powers 深度全量词汇", context: "", example: "skin more a checkpoint between us than a visa in." },
+  { word: "mound", base: "mound", translation: "名词；土堆，小山丘。", category: "Richard Powers 深度全量词汇", context: "", example: "Growing stronger, closer to each other on the mound of rejection slips..." },
+  { word: "rejection slip", base: "rejection slip", translation: "名词词组；退稿信。", category: "Richard Powers 深度全量词汇", context: "", example: "on the mound of rejection slips, which we’d have burned for fuel." },
+  { word: "punch-drunk", base: "punch-drunk", translation: "形容词；被打得晕头转向的，处于迷迷糊糊的兴奋状态中。", category: "Richard Powers 深度全量词汇", context: "", example: "Cheer felt forced and punch-drunk." },
+  { word: "talk-show circuit", base: "talk-show circuit", translation: "名词词组；脱口秀巡回宣传圈。", category: "Richard Powers 深度全量词汇", context: "", example: "But she was like a mother losing her preschooler to the talk-show circuit." },
+  { word: "pitch in", base: "pitch in", translation: "动词短语；投入，参与，帮忙。", category: "Richard Powers 深度全量词汇", context: "", example: "She pitched in, but her heart had bolted." },
+  { word: "bolt", base: "bolt", translation: "动词；（马受惊）脱缰逃跑，飞奔。比喻心已经飞走/逃离了。", category: "Richard Powers 深度全量词汇", context: "", example: "She pitched in, but her heart had bolted." },
+  { word: "grubber", base: "grubber", translation: "名词；贪图钱财的人，粗鄙卑劣的人（这里指纽约的出版商）。", category: "Richard Powers 深度全量词汇", context: "", example: "She hated those grubbers in New York touching the manuscript, even to typeset it." },
+  { word: "typeset", base: "typeset", translation: "动词；排版。", category: "Richard Powers 深度全量词汇", context: "", example: "touching the manuscript, even to typeset it." },
+  { word: "the displaced", base: "the displaced", translation: "名词（the + adj.）；流离失所的人们，无家可归者，边缘人。", category: "Richard Powers 深度全量词汇", context: "", example: "To see them join the ranks of the century’s displaced." },
+  { word: "Operations cage", base: "Operations cage", translation: "名词词组；华尔街术语，指处理证券实物交收的“笼子”/核心后台操作区。", category: "Richard Powers 深度全量词汇", context: "", example: "The brokerage wanted her to run their Operations cage." },
+  { word: "skein", base: "skein", translation: "名词；一束（线、纱）；一连串，一团乱麻。spinning skeins 指编织出一连串的话语。", category: "Richard Powers 深度全量词汇", context: "", example: "We spent them spinning skeins of reassurance." },
+  { word: "crack a whip", base: "crack a whip", translation: "动词短语；挥舞鞭子，指使唤人、行使老板的权力。", category: "Richard Powers 深度全量词汇", context: "", example: "Funny little signs with cartoons of C. on a pyramid of brokers, cracking a whip." },
+  { word: "pound", base: "pound", translation: "动词；（脚步）重重地砸在地上，砰砰地走。", category: "Richard Powers 深度全量词汇", context: "", example: "She pounded up the stairs, slammed the door..." },
+  { word: "Beauie", base: "Beauie", translation: "名词；昵称（Beau 的爱称，加了 -ie 后缀显得亲昵，就像把 Bill 叫成 Billy）。", category: "Richard Powers 深度全量词汇", context: "", example: "“Beauie, we need to get out of this place.”" },
+  { word: "proffer", base: "proffer", translation: "动词；递上，提供，端出（多指提供建议、安慰或实物）。", category: "Richard Powers 深度全量词汇", context: "", example: "I tried to hold her, proffer all the worthless comforts." },
+  { word: "Wire operator", base: "Wire operator", translation: "名词词组；电传打字员/通讯员。这里指 C. 在证券经纪公司做的数据传输后台工作。", category: "Richard Powers 深度全量词汇", context: "", example: "Wire operator in a brokerage." },
+  { word: "parasitic", base: "parasitic", translation: "形容词；寄生虫般的，靠吸血为生的。", category: "Richard Powers 深度全量词汇", context: "", example: "The parasitic middlemen, extracting margin from the news feed..." },
+  { word: "middleman", base: "middleman", translation: "名词；中间商，掮客（复数 middlemen）。", category: "Richard Powers 深度全量词汇", context: "", example: "The parasitic middlemen, extracting margin from the news feed..." },
+  { word: "news feed", base: "news feed", translation: "名词词组；新闻源，新闻推送流。", category: "Richard Powers 深度全量词汇", context: "", example: "extracting margin from the news feed..." },
+  { word: "Teletype", base: "Teletype", translation: "名词；电传打字机（早期华尔街用来接收市场行情的机器）。", category: "Richard Powers 深度全量词汇", context: "", example: "the Teletype romances and tragedies." },
+  { word: "spigot", base: "spigot", translation: "名词；水龙头，旋塞。绝妙的隐喻：指交易员在资本洪流上私接的“抽水阀门”。", category: "Richard Powers 深度全量词汇", context: "", example: "The spigot attached to the pipeline..." },
+  { word: "pipeline", base: "pipeline", translation: "名词；管道。隐喻：流淌着巨大财富的资本管道。", category: "Richard Powers 深度全量词汇", context: "", example: "The spigot attached to the pipeline..." },
+  { word: "leveraging", base: "leveraging", translation: "动名词；（金融）杠杆操作，利用小资金撬动大额利润。", category: "Richard Powers 深度全量词汇", context: "", example: "leveraging profit and hedging loss as it trickled through capital’s tap." },
+  { word: "hedging", base: "hedging", translation: "动名词；（金融）对冲，规避和转移风险的操作。", category: "Richard Powers 深度全量词汇", context: "", example: "leveraging profit and hedging loss as it trickled through capital’s tap." },
+  { word: "trickle", base: "trickle", translation: "动词；滴流，细细地流淌。", category: "Richard Powers 深度全量词汇", context: "", example: "as it trickled through capital’s tap." },
+  { word: "tap", base: "tap", translation: "名词；水龙头，阀门（与前面的 spigot 同义替换，强调资本的流出口）。", category: "Richard Powers 深度全量词汇", context: "", example: "as it trickled through capital’s tap." },
+  { word: "militarized peace", base: "militarized peace", translation: "名词词组；军事化武装下的和平（指冷战时期通过核威慑维持的、充满戒备的和平）。", category: "Richard Powers 深度全量词汇", context: "", example: "between the war and its permanently militarized peace," },
+  { word: "clueless", base: "clueless", translation: "形容词；毫无头绪的，浑浑噩噩的，一无所知的。", category: "Richard Powers 深度全量词汇", context: "", example: "between the Great Personalities and the clueless lives," },
+  { word: "aperture", base: "aperture", translation: "名词；（相机）光圈。在这里引申为捕捉瞬间的动作。", category: "Richard Powers 深度全量词汇", context: "", example: "the aperture and the print," },
+  { word: "filthy lucre", base: "filthy lucre", translation: "名词词组；肮脏的金钱，不义之财（源自圣经典故）。用来与“纯艺术”形成极端的世俗对比。", category: "Richard Powers 深度全量词汇", context: "", example: "filthy lucre and the Fine Arts." },
+  { word: "Fine Arts", base: "Fine Arts", translation: "名词词组；纯艺术，美术（指代 C. 之前在美术馆当保安的经历）。", category: "Richard Powers 深度全量词汇", context: "", example: "filthy lucre and the Fine Arts." },
+  { word: "have a chance against", base: "have a chance against", translation: "动词短语；有机会对抗...，对...有胜算（原句使用 What chance does A have against B 句型，意思是A拿什么对抗B）。", category: "Richard Powers 深度全量词汇", context: "", example: "What chance does story have against neurons..." },
+  { word: "generalize", base: "generalize", translation: "动词；泛化，归纳，概括。", category: "Richard Powers 深度全量词汇", context: "", example: "neurons that generalize from a single instance?" },
+  { word: "generalize from a single instance", base: "generalize from a single instance", translation: "动词短语；从单一实例中泛化出普遍规律（比喻大脑基于一次伤害产生的防卫机制：“一朝被蛇咬，十年怕井绳”）。", category: "Richard Powers 深度全量词汇", context: "", example: "neurons that generalize from a single instance?" },
+{ word: "push the envelope", base: "push the envelope", translation: "动词短语；挑战极限、超越常规、突破现有水平。本是航空航天领域术语（指推向飞行包线极限以测试飞机的极限性能），在文中作为核心科技隐喻，指神经网络系统“B”已经突破了当时人工智能与联结主义的技术极限。", category: "Richard Powers 深度全量词汇", context: "", example: "B already pushed the envelope." },
+  { word: "foray", base: "foray", translation: "名词；初次尝试、涉足、短暂的突击。在文中形容系统“B”是他们在计算语言学（computational linguistics）领域的一次全新且具有开拓性的试水与大胆进军。", category: "Richard Powers 深度全量词汇", context: "", example: "B was a foray into computational linguistics." },
+  { word: "over and under, right of or left of, inside or out", base: "over and under, right of or left of, inside or out", translation: "介词短语组合；在…之上/之下，在…左边/右边，在…里面/外面。这是一组基础的空间方位逻辑介词搭配。这段表达用具体的底层方位词来表明，系统 B 已经开始跨越纯语词的限制，能够理解现实世界最基础的空间几何逻辑关系和物理空间方位了。", category: "Richard Powers 深度全量词汇", context: "", example: "It knew things like over and un- der, right of or left of, inside or out." },
+  { word: "tacked on", base: "tack on", translation: "动词短语（过去式）；附加、增补、草草加上。在文中指计算机科学家 Lentz 行为随性且极度务实，为了处理不同的语言日常任务，一两次粗暴或迅速地给庞大的网络系统随手挂载上、打上新的子网络补丁。", category: "Richard Powers 深度全量词汇", context: "", example: "Lentz once or twice tacked on a new subnet to handle different routines—" },
+  { word: "decoder", base: "decoder", translation: "名词；解码器。计算机科学术语，在这里特指负责“破译”或解析名词短语（noun-phrase）的特定专门计算程序模块。句中与暂存区并列，是 Lentz 随手附加的子网络功能单元。", category: "Richard Powers 深度全量词汇", context: "", example: "a new subnet to handle different routines—a noun-phrase decoder" },
+  { word: "scratch area", base: "scratch area", translation: "名词词组；暂存区、草稿区。计算机硬件及内存管理术语，指内存中用来暂时存放短期、临时数据的地方，功能就像人类打草稿、记临时备忘用的便签纸。在文中指系统用来做短期记忆识别与特征处理的缓存区域。", category: "Richard Powers 深度全量词汇", context: "", example: "or a short-term recognition scratch area." },
+  { word: "representation", base: "representation", translation: "名词；知识表示法（Knowledge Representation）。计算机科学与认知科学核心概念，指机器如何将现实世界极其复杂的逻辑概念、实体对象和语义关系，转化为自身计算机可以处理、运算、存储的数字编码或数据结构。", category: "Richard Powers 深度全量词汇", context: "", example: "Lentz assured me that B would handle its own knowledge representations." },
+  { word: "frames", base: "frame", translation: "名词（复数）；框架（早期AI认知模型）。传统符号主义人工智能（GOFAI）用来给世界建模并教机器理解现实的一种死板结构模型。长难句中提到的传统AI“三座大山”之一。Lentz 认为随着神经网络对“关联输入”的存储，这些原本需要硬编码的顶层框架规则会自然涌现。", category: "Richard Powers 深度全量词汇", context: "", example: "The frames, the inheritance of classification qualities and exceptions, the scripts: all would fall out as a result of the way B stored associated input." },
+  { word: "qualities and exceptions", base: "qualities and exceptions", translation: "名词词组；属性与例外/特例。源自长难句：『The frames, the inheritance of classification qualities and exceptions, the scripts: all would fall out as a result of the way B stored associated input.』整句解析：这是早期人工智能（AI）领域的经典学术黑话。在传统的符号AI逻辑里，知识是靠“分类继承（inheritance of classification）”机制建立的。例如要教机器认识“鸟”，必须手动输入它的基础属性（qualities：有羽毛、会飞），同时必须手动硬编码设定其例外（exceptions：企鹅也是鸟，但企鹅不会飞）。Lentz 的意思是，传统AI需要程序员耗费海量心血一行行去写这些死板的“属性”与“例外”，这太蠢了；而他的神经网络系统 B 极为先进，根本不需要手动硬编码，只要系统以神经网络“联结主义”的方式（associated input）将输入的数据存储起来，上面那些高级的认知和分类继承能力自然而然就会作为底层连接的产物“涌现/掉落出来（fall out as a result）”。", category: "Richard Powers 深度全量词汇", context: "", example: "The frames, the inheritance of classification qualities and exceptions, the scripts: all would fall out as a result of the way B stored associated input." },
+  { word: "scripts", base: "script", translation: "名词（复数）；脚本（认知心理学与早期AI术语）。指人类在特定社会情境下（如去餐厅点餐、去银行取钱）预设的“脑内标准化行为模板”。传统AI需要靠人强行喂入现成脚本，而 Lentz 在句中坚信神经网络 B 会在底层海量关联数据输入中自发总结、演变并自底向上涌现出这种高阶行为脚本模型。", category: "Richard Powers 深度全量词汇", context: "", example: "The frames, the inheritance of classification qualities and exceptions, the scripts: all would fall out as a result of the way B stored associated input." },
+  { word: "minute", base: "minute", translation: "形容词（发音为 /maɪˈnjuːt/）；极其微小的、细微的、微不足道的。在句中指尽管系统 B 所模拟、处理和解决的专门知识领域非常微小狭窄，但它在微观层面上依然需要面对令人麻木、无穷无尽的不同知识类型的异质复杂性。", category: "Richard Powers 深度全量词汇", context: "", example: "But even in its minute domains, B had to deal with numbingly different kinds of knowledges." },
+  { word: "numbingly", base: "numb", translation: "副词；令人麻木地、多到让人失去知觉地。在句中用于形容极其庞大、多样且截然不同的各色知识领域（different kinds of knowledges）铺天盖地，令研究网络的系统创作者感到头脑发木、智力极度疲惫。", category: "Richard Powers 深度全量词汇", context: "", example: "But even in its minute domains, B had to deal with numbingly different kinds of knowledges." },
+  { word: "varied without limit", base: "vary without limit", translation: "动词短语；有着无穷无尽的差别、无限地发散与变化。出自长难句：『With nouns alone, what you could do with “pattern” varied without limit from what you could do with “matching” or “machine.”』整句解析：仅仅在处理“名词”这一单独的词类时，你对“pattern”（模式）这个词所能进行的语法操作、语义拓展和语境上下文搭配，与你对“matching”（匹配）或“machine”（机器）所能做的操作，存在着无穷无尽的差别。这揭示了自然语言极度的复杂性与流动性：每一个词都有其独特的微观用法生态与语义网，冷冰冰的传统机器规则和一刀切的模型根本无法完美兼容处理。", category: "Richard Powers 深度全量词汇", context: "", example: "With nouns alone, what you could do with “pattern” varied without limit from what you could do with “matching” or “machine.”" },
+  { word: "unchartable", base: "unchartable", translation: "形容词；无法在地图上标出的、无法测绘的、不可预知的、无规律可循的。在文中指整个大规模神经网络结构已经生化般长成了一个极其庞大、错综复杂的怪物。由于其分布式（distributed）的特质，其内部千亿个复杂的突触神经元联结方式完全变成了不可测绘的黑盒，彻底脱离了人类宏观的设计与完全掌控。", category: "Richard Powers 深度全量词汇", context: "", example: "The thing was a monster, distributed, unchartable, out of control." },
+  { word: "grokked", base: "grok", translation: "动词（科幻与高阶计算机极客圈黑话，源自罗伯特·海因莱因科幻神作《异乡异客》）；深刻地、直觉地、全身心地理解并融入某事。科学家 Lentz 用这个极具傲慢的硬核黑话去调侃、嘲讽处于人文学科这一侧（on the humanistic side of the tracks）的文科男主：你这个搞文学的人，大概到现在还没彻底参透、悟透这个有关系统的深刻道理吧。", category: "Richard Powers 深度全量词汇", context: "", example: "in case you on the humanistic side of the tracks haven’t grokked this yet," },
+  { word: "trade-offs", base: "trade-off", translation: "名词（复数）；权衡、妥协、代价、得失转化。属于计算机工程学与人生的双重核心词汇，指为了获得某种性能优势（如系统网络层规模小带来的高超泛化与归纳能力）就必须牺牲另一种优势（如记忆并契合更庞大、复杂新事实的能力），不存在万能的完美方案，所有设计与生命抉择都是一系列妥协与代价的平衡。", category: "Richard Powers 深度全量词汇", context: "", example: "involves a series of trade-offs." },
+  { word: "blooming", base: "blooming", translation: "形容词（英式口语加强语气）；十足的、他妈的。带有强烈的刻薄、戏谑与讽刺意味。Lentz 在男主反推出一条显而易见的逻辑废话后，阴阳怪气地讽刺赞美道：“这诗人可真是个‘十足的天才’啊。这下我们总算见识到你是怎么轻松骗到国家资助金的了。”", category: "Richard Powers 深度全量词汇", context: "", example: "The poet’s a blooming genius." },
+  { word: "disassemble", base: "disassemble", translation: "动词；拆卸、拆解、解构。是理解全篇关于中年危机的经典核心神句的核心动词。这里用计算机硬件或软件模块的“拆解”来比喻人类随着岁月逐渐固化、板结的固有“心智体系的彻底解构与重建”，暗含需要付出巨大的能量、代价与精神阵痛。", category: "Richard Powers 深度全量词汇", context: "", example: "Do I really want to disassemble tens of thousands of tangled, semiaccurate beliefs" },
+  { word: "receptor field", base: "receptor field", translation: "名词词组；感受野（神经生物学硬核黑话）。原本物理学与生理学指视网膜、皮肤或听觉器官上，能够引起某一个特定高级神经元产生电信号激活刺激的微小物理感知区域。在文中被 Lentz 精妙绝伦地引申为主观认知层面的“对某一个特定微小、边缘事物的微观认知面或细微见解”。", category: "Richard Powers 深度全量词汇", context: "", example: "on the off chance that I might be able to bring one small receptor field into better focus?" },
+  { word: "bring into better focus", base: "bring into focus", translation: "动词短语；使…更聚焦、拧清焦距、看清原本模糊的东西。借用拧紧照相机镜头的物理画面，比喻调整心智聚焦，使原本模糊晦涩的概念清晰化。结合全段长难句深度解析：Lentz 将神经网络由于网络层过大导致的“过拟合/僵化”与人类 35 岁左右的“中年危机/心智闭合”进行了极为天才的生物学类比。他指出，人到了35岁，大脑神经元连接基本固化，人们会悲哀且疲惫地问自己：『我差不多已经大致看懂了这个世界的底层运转逻辑了。难道我真的愿意为了碰碰那千分之一的虚无运气（on the off chance），仅仅为了让我对某一个微不足道的边缘领域认知变得稍微清晰透彻、精准一点（bring one small receptor field into better focus），就去把我脑子里那几万条在漫长前半生里早已死死纠缠在一起（tangled）、虽然半对半错（semiaccurate）但勉强足够应对日常生活的所有固有偏见、三观和信念，全部彻底拆毁、解构并重建（disassemble）吗？』这也是绝大多数成年人随着衰老逐渐变得冥顽不灵、拒绝接受新真理的神经科学本质：重构成本太高，人们宁愿带着偏见凑合活着。", category: "Richard Powers 深度全量词汇", context: "", example: "on the off chance that I might be able to bring one small receptor field into better focus?" },
+  { word: "pick through", base: "pick through", translation: "动词短语；仔细翻找、挑拣、梳理。Lentz 调侃并羡慕男主此刻还足够年轻，还有几年的资本和时间去慢慢梳理、挑选并打破那些脑子里的固有体系与新把戏（tricks），不至于像他这样已经彻底尘埃落定、心智固化。", category: "Richard Powers 深度全量词汇", context: "", example: "You’ve a few tricks yet to pick through. And a few years yet to pick through them." },
+  { word: "soldering gun", base: "soldering gun", translation: "名词；电烙铁、焊接枪。电子硬件极客进行硬件改造、组装印刷电路板、焊接核心元器件时必备的纯手工升温工具。男主在文中试图通过让傲慢的理科博士 Lentz 手里一直拿着电烙铁埋头干实活，来强行转移他的攻击性，从而尽可能过滤和无视他那连珠炮般的毒舌嘲讽。", category: "Richard Powers 深度全量词汇", context: "", example: "I tried to keep the soldering gun in his hand" },
+  { word: "baiting", base: "bait", translation: "名词；故意激怒、挑衅、学者式的言语嘲弄、设圈套引诱。该词本意源自古代欧洲野蛮的“引狗斗熊（bear-baiting）”游戏，在文中指 Lentz 博士在和男主探讨宏大的神经网络设计哲学时，嘴里吐出的那些高高在上、故意用智商压迫、挑衅和羞辱文科男主的刻薄学者嘲讽。", category: "Richard Powers 深度全量词汇", context: "", example: "and ignore the baiting as much as possible." },
+  { word: "turn all the cards over", base: "turn the cards over", translation: "动词短语；字面意思是“把所有的纸牌都翻过来”，引申为“摊牌、彻底讲明白、放弃无谓的猜测、直接公布答案”。男主在 Lentz 连珠炮般步步紧逼的技术考核和智力刁难下彻底认输并举起白旗，请求 Lentz 直接开门见山地亮出底牌、公布隐藏的设计谜底。", category: "Richard Powers 深度全量词汇", context: "", example: "We’re going to have to turn all the cards over." },
+  { word: "translation impedance", base: "translation impedance", translation: "名词词组；转换阻抗。借用了物理学与电学中的“阻抗（Impedance，指电路对交流电的阻碍作用）”概念，在这里作为绝妙的心智隐喻，指代信息、数据流或语义符号在两个截然不同的网络层级、语言体系或概念模型之间进行跨层跨界转化（translation）和映射时，所不可避免遭遇到的抵抗、摩擦损耗、扭曲或保真度失真。这也是系统工程必须做出折中（trade-off）的原因。", category: "Richard Powers 深度全量词汇", context: "", example: "Consider the translation impedance. Another trade-off." },
+  { word: "susceptible", base: "susceptible", translation: "形容词；易受影响的、脆弱的、敏感的、容易中招的。句中指网络随着层级设计，其分辨率（resolution）和解析度虽然被调得越来越好、越来越高，但作为必然的物理代价（trade-off），整个网络系统也会变得极其敏感和脆弱，极易受到周围随机噪声（random noise）的干扰、污染与破坏。", category: "Richard Powers 深度全量词汇", context: "", example: "the more susceptible the net becomes to random noise." },
+  { word: "curve fitter", base: "curve fitter", translation: "名词；曲线拟合器。数学、统计学与机器学习中的核心基础概念（指通过算法找到一条最完美的数学曲线，使之尽可能穿过并概括所有零散分布的已知经验数据点）。高傲冷酷的 Lentz 将至高无上的人类大脑进行了极度的去神圣化和唯物主义矮化，认为所谓的人类灵魂、情感和思维本质上不过也就是一个极其庞大的“曲线拟合器”，一生都在试图在纷繁无序的宇宙经历中，拟合出一条名为“规律”或“意义”的动态高维曲线而已。", category: "Richard Powers 深度全量词汇", context: "", example: "Think of B as a curve fitter . . . That’s all our brains are? Curve fitters?" },
+  { word: "cohere into lumps", base: "cohere into lumps", translation: "动词短语；凝聚/粘合成概念块状物。出自痛损文学教授 Plover 的名句：『The fact that we can get the infinite data stream to cohere into lumps at all has turned men with as much native intelligence as your friend Plover into mystics.』整句解析：Lentz 认为客观世界其实只是一堆无限、混乱、冰冷且毫无灵性意义的原始数据流（infinite data stream）。人类大脑由于演化出了一种纯粹机械的算法机制，居然能让这些混乱的数据流在感知中勉写勉强“凝聚成有意义的概念块（lumps，如语言、符号、神话和因果逻辑）”。然而，正是因为这种纯粹生物物理层次的机械运作在感官上显得过于神奇，居然把像 Plover 这种智商本来挺高的文科教授给彻底欺骗和忽悠了，导致他们沦为了可笑的“神秘主义者（mystics）”，误以为这些凝聚出的块状物背后带有神圣的灵性、浪漫与神启。Lentz 实际上是在毒舌嘲骂文科生缺乏科学素养，把大脑的机械本能当成了神的造物。", category: "Richard Powers 深度全量词汇", context: "", example: "The fact that we can get the infinite data stream to cohere into lumps at all has turned men with as much native intelligence as your friend Plover into mystics." },
+  { word: "slander", base: "slander", translation: "动词/名词；（口头）诽谤、中伤、编排诋毁。男主眼见 Lentz 开始疯狂抨击和矮化人文学界，赶忙用言语打断他：“得，你又开始公开诋毁、诽谤我的老朋友哈罗德·普洛弗（Harold Plover）了。” Lentz 随后尖锐地回应说这不算诽谤，因为 Plover 的那些荒谬学术主张都是他自己公开印在纸上发表的。", category: "Richard Powers 深度全量词汇", context: "", example: "Time to slander Harold. — It’s not slander. The man makes his claims public." },
+  { word: "linguistic configuration", base: "linguistic configuration", translation: "名词词组；语言结构、符号配置。文学教授 Plover 用来捍卫人文学科尊严的学术短语。出自其高深论文的代表语录：『Meanings extractable from a given linguistic configuration may be neither convergent, bounded, nor recursively enumerable.』指代特定的文本、句子或词汇符号在空间上的排列组合状态。", category: "Richard Powers 深度全量词汇", context: "", example: "Meanings extractable from a given linguistic configuration may be neither con- vergent, bounded, nor recursively enumerable." },
+  { word: "convergent, bounded, nor recursively enumerable", base: "convergent, bounded, nor recursively enumerable", translation: "高阶术语组合；收敛的、有界的、递归可枚举的。这些词汇全部属于高等数学、拓扑学、集合论以及计算复杂性理论中的硬核概念（其中“递归可枚举”在图灵可计算性理论中指可以用算法/图灵机一步步穷举出来的无限集合）。全句学术深度解析：这是理查德·鲍尔斯写出的极其精彩的文理思维对决。这段话还原了人文学科教授 Plover 捍卫文学价值、反击唯科学主义和人工智能的核心学术盾牌。Plover 的意思是：『从任何给定的、有限的语言符号结构（linguistic configuration）中提炼出的“文本意义与精神内涵”，在纯粹的数学 and 算法层面上，既不是收敛的（它是无限发散的），不是有界的（它是没有穷尽边界的），更是绝对无法通过冷冰冰的算法逻辑和图灵机去逐步穷举出来的（neither convergent, bounded, nor recursively enumerable）。』也就是说，由于人类生活的“语境（context）”具有无限延伸和动态演变性，世界上绝对不可能存在任何一种能够完美计算、破译人类语言艺术、阐释学和灵魂意义的“神经学微积分/大脑解释算法（neurological calculus of interpretation）”。这是文科生对理科企图用算法统治世界的终极反叛。", category: "Richard Powers 深度全量词汇", context: "", example: "Meanings extractable from a given linguistic configuration may be neither con- vergent, bounded, nor recursively enumerable." },
+  { word: "neurological calculus of interpretation", base: "neurological calculus of interpretation", translation: "名词词组；神经学层面的阐释微积分/计算法。文学教授 Plover 论文中的核心理论词汇，用于全盘否定用机器取代人类阅读。他强调人类对文本的理解和“解释（interpretation）”带有无限的精妙发散性，绝对不可以通过任何冷冰冰的、关于大脑神经硬件和突触信号的数学方程（neurological calculus）去精细求解或彻底还原。", category: "Richard Powers 深度全量词汇", context: "", example: "there can be no neurological calculus of interpretation." },
+  { word: "printed circuit", base: "printed circuit", translation: "名词；印制电路板（Printed Circuit Board, PCB）。电子工程学和硬件计算的最基础物理硬件。男主趁着高傲的 Lentz 博士此时双手塞满了裸露的电路板、脑袋深埋进大型计算机服务器机箱机架里无暇他顾的尴尬狼狈瞬间，用极其高级的莎士比亚文学典故对他进行了一次言语上的轻微挑逗、反击与调侃。", category: "Richard Powers 深度全量词汇", context: "", example: "waiting until he had his hands full of printed circuit" },
+  { word: "tweak", base: "tweak", translation: "动词；本意为微调、拧、轻轻捏一下。在这段充满机锋的对话语境中，它被活用为动词，意思是“调侃、戏谑、故意戳对方痛处、用言语轻轻地挑逗”。男主是在用文学典故反击这位傲慢的工程师，轻轻戳一下他那狂妄的理科思维盲区。", category: "Richard Powers 深度全量词汇", context: "", example: "“And you, Engineer?” I tweaked, waiting until he had his hands full of printed circuit" },
+  { word: "virtuous / cakes and ale", base: "virtuous / cakes and ale", translation: "文学典故/心智隐喻组合；高尚的、自命不凡的 / 蛋糕与麦芽啤酒（象征着红尘俗世里的寻欢作乐、感官享受、浪漫、随性、感性的艺术体验与非理性的快乐）。男主引用的台词：『Do you think that because you are virtuous, there will be no more cakes and ale?』是一次惊艳至极的文学暴击，精准化用了莎士比亚经典喜剧《第十二夜》（Twelfth Night）第二幕第五场中托比爵士反击古板、清高、毫无幽默感的管家马伏里奥的名台词。整句解析：男主在这里将莎士比亚的文学刀子狠狠戳向了傲慢自大、自诩掌握了宇宙物理真理的工程师 Lentz。男主借此嘲弄反问：『你以为你坚守着机器唯物主义和还原论的“科学美德与清高”（virtuous），觉得世界上一切都只是冷冰冰的底层硬件和可计算的曲线拟合，这红尘俗世里那些无法被算法穷尽的文学浪漫、偶然的美好、感官的快乐、红尘的烟火气以及模糊而美丽的人性本身（cakes and ale）就会在人间彻底消失、不复存在了吗？』这是全书文理交锋中最具戏剧张力的一幕。", category: "Richard Powers 深度全量词汇", context: "", example: "Do you think that because you are virtuous, there will be no more cakes and ale?" },
+  { word: "cagey", base: "cagey", translation: "形容词；狡黠的、圆滑的、谨慎的、守口如瓶的。傲慢的 Lentz 用来打趣和评价男主在面对复杂的输出层网络参数提问时学聪明了，给出了一个两头堵、毫无破绽、无法被轻易挑刺和羞辱的圆滑专业回答，夸他越来越像个狡黠、精明的学术政客了。", category: "Richard Powers 深度全量词汇", context: "", example: "Well done. You’re getting cagey." },
+  { word: "NSF", base: "NSF", translation: "缩写名词；美国国家科学基金会（National Science Foundation）。Lentz 看到男主给出了极其圆滑、无懈可击的狡黠回答后，辛辣地讥讽道：『按照你这种说漂亮废话、两头逢源的功力，我们很快就能放心地让你去负责撰写那些向国家骗取和申请大笔高额科研资助经费的立项申请报告（NSF proposals）了。』", category: "Richard Powers 深度全量词汇", context: "", example: "We’ll have you writing NSF proposals in no time." },
+  { word: "mellowing", base: "mellow", translation: "动词/形容词；（随着岁月/陈酿）变得柔和、圆润、醇厚、不再刺人。文中男主用来带着一丝亲切去打趣和评价 Lentz 的尖酸刻薄（sarcasms）。随着这位老科学家的年龄不断增长，他那原本如雪亮刺刀般见血的讽刺，终于也不可避免地开始带上了一丝丝柔和的温情与岁月的厚重。", category: "Richard Powers 深度全量词汇", context: "", example: "Lentz’s sarcasms were mellowing with age." },
+  { word: "catch on to", base: "catch on to", translation: "动词短语；理解、领会、猛然醒悟、开窍（通常指好不容易弄懂了别人早就心照不宣、习以为常的基础常识）。男主在这里幽默地自嘲：要是外面那些象牙塔里那些天天写长篇大论、搞前沿文学理论和文学批评的同仁们（lit critters），也能像机器逻辑一样早点开窍、领会到把复杂的人类 quest 还原为一系列最简单的是非二进制问题（yes-or-no questions）的便利就好了。", category: "Richard Powers 深度全量词汇", context: "", example: "I wish the lit critters would catch on to that." },
+  { word: "Handy", base: "handy", translation: "形容词；好用的、便利的、省事的、得心应手的。Lentz 顺着男主对文学界二进制还原的调侃，赞同并感叹：这种简单粗暴的图灵机逻辑确实很省事、很好用吧？能把所有人文科学里泥沙俱下、纠缠不清的复杂概念在一瞬间清理得干干净净、井井有条。", category: "Richard Powers 深度全量词汇", context: "", example: "Handy, isn’t it? Cleans up a lot." },
+  { word: "loaded", base: "loaded", translation: "形容词；带有强烈主观感情色彩的、含义复杂的、暗藏玄机与信仰陷阱的。作为一个坚定的硬核自然科学家和机械唯物主义者，Lentz 极其警惕和厌恶男主口中蹦出的“Creation（造物、创世、创造）”这个词。因为在他眼里，该词不可避免地沾染了浓厚的宗教创世论和唯心主义色彩，在纯粹的科学语境下是一个不纯粹、暗藏神学陷阱的词汇。", category: "Richard Powers 深度全量词汇", context: "", example: "“Creation” is a loaded word, Marcel." },
+  { word: "seize up", base: "seize up", translation: "动词短语；（机器、发动机等）因缺乏润滑或严重故障而卡死、死机、彻底瘫痪停止运转。在文中形容由于人类塞入的临时补丁、曲折微调和各种乱码连接数据太多，整个神经网络系统系统终于不堪重负发生了灾难性的“死机卡死”，像钢铁发动机轴承缺乏润滑油一般彻底锁死，无法复活。", category: "Richard Powers 深度全量词汇", context: "", example: "when B seized up for good." },
+  { word: "for good", base: "for good", translation: "固定搭配；永远地、彻底地、无法挽回地。在句中与 seize up 连用，宣告了倾注无数心血的神经网络系统 B 的寿终正寝——它这次的死机不是之前的寻常小崩溃或闪退，而是发生了不可逆转、宣告研发彻底失败的永远瘫痪。", category: "Richard Powers 深度全量词汇", context: "", example: "when B seized up for good." },
+  { word: "stopgapped", base: "stopgapped", translation: "动词（由名词 stopgap 临时替代物/权宜之计 转化演变而来）；用权宜之计填补、临时凑合修补、打上临时创可贴。形容系统在彻底大崩溃前，为了强行消除层出不穷的软件漏洞和系统 glitch，男主和 Lentz 已经拆东墙补西墙地给它打满了无数个临时缝补、拆补的粗糙应急补丁。", category: "Richard Powers 深度全量词汇", context: "", example: "we’d stopgapped so many glitches" },
+  { word: "hieroglyphic", base: "hieroglyphic", translation: "形容词；象形文字的、古埃及难以破译的、如天书般混乱的。文中用来形容系统 B 在接收到人类输入的基础自然语言事实（如谁是谁的哥哥）时，其内部算法机械地将其降维、破译并转换成了由数万个多维空间坐标、浮点数电信号构成的、对于人类肉眼而言如同天书乱码般的底层高维空间向量数据流（hieroglyphic vectors）。", category: "Richard Powers 深度全量词汇", context: "", example: "B turned the fact into a stream of hieroglyphic vectors" },
+  { word: "imperceptibly", base: "imperceptibly", translation: "副词；察觉不到地、微乎其微地、神不知鬼不觉地。形容随着新事实源源不断地输入，网络底部的数百万个突触连接权重布局（layout）虽然在悄然演变，但其调整的幅度极微、微小到人类的宏观观测仪器和物理感官绝对无法捕捉到。", category: "Richard Powers 深度全量词汇", context: "", example: "that changed its layout imperceptibly." },
+  { word: "aphasics", base: "aphasics", translation: "名词（复数）；失语症患者（医学上特指因大脑特定高级语言皮层区域受损，导致丧失正常的说话、理解、阅读或书写语言能力的病人）。男主在测试系统 B 能正确回答出谁是谁的哥哥/妹妹时松了一口气，甚至带有一丝自豪地赞叹它此刻的初始表现已经超越了人类中部分可怜的医学失语症患者。", category: "Richard Powers 深度全量词汇", context: "", example: "Already it outperformed some aphasics." },
+  { word: "presumptive matrix", base: "presumptive matrix", translation: "名词词组；预设的认知矩阵、潜意识里的固有心智框架、先入为主的预设世界偏见。当机器给出某些古怪、滑稽但并不完全算错的擦边球回答时（例如由于语言逻辑缺陷，理常当然地把男性Jim的名字搞错当成了John的妹妹），男主赫然震撼地发现，机器犯下的愚蠢错漏反而像一面镜子，无情地戳破并反照出了他自己作为人类大脑中那些理所当然、先入为主的语言定势和预设思维盲区（presumptive matrix）。", category: "Richard Powers 深度全量词汇", context: "", example: "In fact, it taught me a thing or two about my own presumptive matrix." },
+  { word: "cranking", base: "cranking", translation: "名词/动词（这里特指漫长痛苦的计算等待时间）；艰难运转、死抠算法、像老式机器费力地摇晃曲柄一般进行后台运算。这个词极具早期大型机和老式内燃机的机械复古感，指代计算机在面临逻辑死循环、深度特征错乱时，极其卡顿、费劲且慢得让调测人员抓狂、无法忍受的漫长后台“死算”等待时间（cranking time）。", category: "Richard Powers 深度全量词汇", context: "", example: "At that point, B’s cranking time became unendurable." },
+  { word: "marginally", base: "marginally", translation: "副词；勉强地、处于及格边缘地、微乎其微地。在句中指机器在死算了很久后给出的回答（“吉姆把苹果扔了因为她不想要了”）仅仅是一个在逻辑通过线边缘疯狂试探、只能勉强算过关、完全谈不上任何真正智能的极其平庸的答复。", category: "Richard Powers 深度全量词汇", context: "", example: "A marginally acceptable answer." },
+  { word: "tacit implication", base: "tacit implication", translation: "名词词组；心照不宣的暗示、未言明的蕴含意义、潜台词。男主面对极其平庸机械的AI回答，在心里升起了一丝不切实际的自我安慰和文科幻想：学术上也许在这个笨拙粗糙的回答背后，机器纠缠的底层神经网络里真的误打误撞隐藏着人类没有看破的高深语义洞察（insight）和心照不宣的未言明潜台词呢？然而随后的测试无情打破了这一幻想。", category: "Richard Powers 深度全量词汇", context: "", example: "Maybe insight hid away somewhere in that tacit implication." },
+  { word: "bluffing", base: "bluffing", translation: "动词（现在分词）；虚张声势、装懂、瞎蒙、虚晃一枪欺骗对手。男主在面对机器含糊模棱两可的逻辑回答时感到极度狐疑与沮丧，他敏锐地怀疑这台该死的钢铁机器其实慢得根本没有任何真正的逻辑理解力，只是在利用底层的词汇概率拼凑和统计学惯性，在人类面前“装懂和瞎蒙”来敷衍、欺骗测试者。", category: "Richard Powers 深度全量词汇", context: "", example: "But maybe the damn thing was bluffing." },
+  { word: "doomed from birth to a career in food service", base: "doomed from birth to a career in food service", translation: "长句短语/经典隐喻；从出生那一刻起就注定了只能去从事最底层的餐饮服务业（去快餐店端盘子/洗碗）。出自高光长难句：『Its vagueness depressed me: the slow tyro during story hour, doomed from birth to a career in food service.』整句经典解析：系统 B 那种含糊其辞、完全无法理解复杂逻辑链条的模糊回答，让倾注了无数心血的男主陷入了极其深重的精神沮丧与幻灭。在他眼里，这台原本寄托着人类智能未来的高阶机器，此刻就像是幼儿园听故事时间里（during story hour）反应最迟钝、最笨拙、永远跟不上老师节奏的那个“差生小孩/笨 tyro”。看着这个笨拙的AI，男主脑海中升起了一股极其真实且绝望的、对生命阶层和宿命的深刻悲悯：你看着这个迟钝的孩子，就知道他这辈子无论怎么努力都注定学会不会高深的算法或文学，他因为底层架构的先天缺陷，从出生那一刻起就早已被判了死刑，注定了一辈子只能去端盘子、做最底层的餐饮服务业。男主在这里精妙地将理科的技术研发失败，转化为文科对低智力、边缘生命阶层心碎且无奈的文学悲悯，具有摧毁性的情感张力。", category: "Richard Powers 深度全量词汇", context: "", example: "Its vagueness depressed me: the slow tyro during story hour, doomed from birth to a career in food service." },
+  { word: "proto-intelligence", base: "proto-intelligence", translation: "名词；初级智能、雏形智能、原始心智。前缀 proto- 表示“原始的、最初的、处于胚胎雏形阶段的”。在句中形容系统 B 这种完全非人类的、异类的初始机械心智：它那既像带着一丝人类理性，却又完全迥异于人类常识和正常心智的诡异思考与卡顿逻辑，异样到了极点，让男主的太阳穴突突地因为头疼和精神压迫而疯狂跳动。", category: "Richard Powers 深度全量词汇", context: "", example: "This alien proto-intelligence differed just enough from sense to make my head throb." },
+  { word: "lay within", base: "lay within", translation: "动词短语（过去式）；处于…范围之内、维持在…内部。指系统 B 的各项语言测试和计算参数虽然已经极为拉胯、摇摇举坠，但在宏观上勉强还算维持在可以接受、没有彻底失控跌落的最低可容忍容错表现区间（acceptable performance margins）之内。", category: "Richard Powers 深度全量词汇", context: "", example: "Still, we lay within acceptable performance margins." },
+  { word: "damning seizures", base: "damning seizures", translation: "名词词组；毁灭性的突然宕机卡死/癫痫突然大发作。damning 意为毁灭性的、极其糟糕的、宣判死刑的；seizures 借用了医学上人类大脑神经元异常放电导致的“癫痫、抽搐与昏迷”。这里作为硬核隐喻，指代大规模神经网络系统遭到了致命的计算死循环和底层逻辑断裂，整个AI怪物陷入了毁灭性的死机中，一动不动地强行死算、死锁了一整个下午，彻底卡死，宣告了整个系统 B 生命周期的彻底终结与技术研发的流产。", category: "Richard Powers 深度全量词汇", context: "", example: "B had one of its damning seizures. It cranked all afternoon," },
+{ word: "skewed", base: "skew", translation: "形容词/动词过去分词；歪斜的、扭曲的、出现偏差的。在文中指系统 B 输出的答案逻辑开始出现严重的扭曲与滑坡。", category: "Richard Powers 深度全量词汇", context: "", example: "When pushed, it finally failed to answer all together." },
+  { word: "frameshift", base: "frameshift", translation: "名词；移码突变（生物遗传学词汇）/ 认知视角的根本性转换。在这里理查德·鲍尔斯借用基因突变的概念，指代对话中发生的某种关键语境或语义的根本性跳跃，而这种跳跃超出了系统 B 的处理能力。", category: "Richard Powers 深度全量词汇", context: "", example: "Some crucial frameshift fell outside B’s ability to effect." },
+  { word: "bad blood", base: "bad blood", translation: "名词词组/习语；过节、嫌隙、仇恨。系统 B 无法理解人类社会复杂的人际关系，无法输出像“也许他们之间有过节（bad blood）”这样充满人情世故的推断。", category: "Richard Powers 深度全量词汇", context: "", example: "There could be bad blood I haven’t heard about." },
+  { word: "meta-ability", base: "meta-ability", translation: "名词；元能力。指代“思考自身思考过程”的能力。系统缺乏这种高级的自我审视能力。", category: "Richard Powers 深度全量词汇", context: "", example: "It lacked some meta-ability to step back and take stock of the semantic exchange." },
+  { word: "take stock of", base: "take stock of", translation: "动词词组/习语；盘点、审视、后退一步进行全局评估。字面意思是清点库存，文中指系统无法在对话中停下来，审视和评估刚才发生的“语义交换”到底意味着什么。", category: "Richard Powers 深度全量词汇", context: "", example: "It lacked some meta-ability to step back and take stock of the semantic exchange." },
+  { word: "appraise itself from the air", base: "appraise itself from the air", translation: "长难句隐喻；从高空俯视并评估自身。出自原句：It could not make even the simplest jump above the plane of discourse and appraise itself from the air. 【深度解析】系统 B 只能进行字面上的“词汇接龙”（被困在二维的对话平面 plane of discourse 上），它缺乏人类那种“元认知能力”。人类在说话时，脑海中会有一个“上帝视角”在旁观并修正这场对话，而系统 B 无法跳出对话框架，从更高维度（from the air）去审视自己的荒谬。", category: "Richard Powers 深度全量词汇", context: "", example: "It could not make even the simplest jump above the plane of discourse and appraise itself from the air." },
+  { word: "elude", base: "elude", translation: "动词；逃避、使...无法理解、从...的掌握中溜走。虽然 B 勉强能说话，但真正的人类“言语（speech）”的灵魂本质依然让 B 无法捕捉（eluded B）。", category: "Richard Powers 深度全量词汇", context: "", example: "Although it talked, in a manner of speaking, speech eluded B." },
+  { word: "falter", base: "falter", translation: "动词；蹒跚、动摇、衰退、结巴。指 B 的“大脑”在某一个智力发育的关卡前绊倒了、停滞不前了。", category: "Richard Powers 深度全量词汇", context: "", example: "Its brain faltered at that Piagetian stage where the toy disappeared..." },
+  { word: "Piagetian stage", base: "Piagetian stage", translation: "专有名词/心理学典故；皮亚杰阶段（特指客体永久性阶段）。【深度解析】瑞士发展心理学家皮亚杰指出，婴儿在发育初期缺乏“客体永久性（Object Permanence）”概念，如果把玩具放在屏风后，婴儿会认为玩具“不存在”了。作者以此精妙讽刺 AI：系统 B 处理的只是表面的文本符号，一旦符号消失，它脑子里根本没有任何关于现实物理世界的真实概念，它连一岁婴儿的认知都不如。", category: "Richard Powers 深度全量词汇", context: "", example: "Its brain faltered at that Piagetian stage where the toy disappeared when placed behind a screen." },
+  { word: "screwy", base: "screwy", translation: "形容词（非正式）；出毛病的、古怪的、乱七八糟的、出岔子的。", category: "Richard Powers 深度全量词汇", context: "", example: "Something was screwy with the way B passed symbolic tokens among its levels." },
+  { word: "symbolic tokens", base: "symbolic tokens", translation: "名词词组；符号令牌、符号标记（AI/计算机术语）。指计算机或神经网络在不同层级之间传递的“信息/数据基本处理单元”。", category: "Richard Powers 深度全量词汇", context: "", example: "Something was screwy with the way B passed symbolic tokens among its levels." },
+  { word: "fecund", base: "fecund", translation: "形容词；多产的、肥沃的、繁殖力旺盛的。文中用来形容知识结构像施了肥的田地一样疯狂无序地生长。", category: "Richard Powers 深度全量词汇", context: "", example: "as fecund as a field tilled with representational fertilizer." },
+  { word: "representational", base: "representational", translation: "形容词；表征的、代表性的（认知科学中的“知识表征”）。", category: "Richard Powers 深度全量词汇", context: "", example: "as fecund as a field tilled with representational fertilizer." },
+  { word: "nil", base: "nil", translation: "名词/形容词；零、无。系统有海量的数据，但关于这些“知识的元知识（关于知道什么的知识）”，它的储备永远是零。", category: "Richard Powers 深度全量词汇", context: "", example: "But its knowledge about knowledge would remain forever nil." },
+  { word: "patching", base: "patch", translation: "动名词；打补丁、临时修补（软件工程术语）。", category: "Richard Powers 深度全量词汇", context: "", example: "And no patching or kludging on Lentz’s part could set it right." },
+  { word: "kludging", base: "kludge", translation: "动名词（极客黑话）；用劣质代码拼凑、胡乱对付、草率修补。无论 Lentz 怎么缝缝补补，都无法修正这种底层网络结构的先天缺陷。", category: "Richard Powers 深度全量词汇", context: "", example: "And no patching or kludging on Lentz’s part could set it right." },
+  { word: "constituent nets", base: "constituent nets", translation: "名词词组；内在组成网络、子网络。正如你所猜测，B 无法产生真正的智能，其根本问题在于它内在各个子网络之间相互连接和沟通（spoke to one another）的方式出了结构性错乱。", category: "Richard Powers 深度全量词汇", context: "", example: "B’s deficiency seemed to be a by-product of the way its constituent nets spoke to one another." },
+  { word: "grand schematic", base: "grand schematic", translation: "名词词组；总体蓝图、宏大架构图、总体设计回路。", category: "Richard Powers 深度全量词汇", context: "", example: "The way we’d linked them into the grand schematic." },
+  { word: "inert", base: "inert", translation: "形容词；呆滞的、毫无生气的、惰性的、一动不动的。男主走进办公室，发现 Lentz 像个死人一样呆坐在桌后，酝酿着一个疯狂的计划。", category: "Richard Powers 深度全量词汇", context: "", example: "found Lentz behind his desk, inert." },
+  { word: "Ahab, well out of port", base: "Ahab", translation: "长难句/文学典故；亚哈船长在远离港口的深海，宣布微小的计划变更。【深度解析】引用麦尔维尔名著《白鲸》。亚哈船长骗船员出海，等船驶入深海无法回头时（well out of port），才轻描淡写地宣布他们其实要去执行自杀式任务猎杀白鲸。男主以此形容 Lentz 的疯狂：在项目投入无数心血、已无法回头的阶段，Lentz 突然宣布要“更改底层架构（相当于推翻重来）”，这是拉着全船人陪葬的疯子行为。", category: "Richard Powers 深度全量词汇", context: "", example: "Ahab, well out of port, announcing the slight broadening of plans." },
+  { word: "invested", base: "invested", translation: "形容词；投入过多的（情感或时间）。男主在这项工程上付出了太多的“沉没成本”，以至于当系统被宣告推翻时，他甚至连“士气低落（demoralized）”的力气都没有了。", category: "Richard Powers 深度全量词汇", context: "", example: "I was too invested to feel demoralized." },
+  { word: "demoralized", base: "demoralized", translation: "形容词；士气低落的、泄气的。", category: "Richard Powers 深度全量词汇", context: "", example: "I was too invested to feel demoralized." },
+  { word: "porting into new digs", base: "porting into new digs", translation: "长难句隐喻；移植进新住所/新机箱。【深度解析】porting 是软件移植，digs 是美式俚语中的“住所、窝”。男主当时天真地以为，只需要给系统 B 拍个数据快照备份，然后把它原封不动地“拷贝”到性能更强的新硬件住所里就行了。但他绝望地发现，神经网络一旦更改底层架构，原来几百万个权重的连接必须从零开始重新训练（Retrain from scratch），没有任何捷径可走。", category: "Richard Powers 深度全量词汇", context: "", example: "somehow porting it intact into new and more capable digs." },
+  { word: "sunny neutrality", base: "sunny neutrality", translation: "名词词组；阳光明媚的中立国（指代瑞士）。男主笔下小说的场景，火车穿过雪山开往二战中立国瑞士。", category: "Richard Powers 深度全量词汇", context: "", example: "crossing the snow-lined mountains toward sunny neutrality." },
+  { word: "plagiarizing", base: "plagiarize", translation: "动词（现在分词）；剽窃、抄袭。发音：/ˈpleɪdʒəraɪzɪŋ/（普类-哲-软-zing）。男主陷入了严重的创作焦虑，写一句就要跑去图书馆查证自己是不是潜意识里抄了别人的。", category: "Richard Powers 深度全量词汇", context: "", example: "verify that I wasn’t unconsciously plagiarizing." },
+  { word: "Ancrene Riwle", base: "Ancrene Riwle", translation: "文学与戏剧缝合典故；《隐修女守则》。【深度解析】《Ancrene Riwle》是一部极其枯燥的中世纪教导修女如何清修的古英语文献；而 Samuel Beckett（贝克特）则是《等待戈多》的现代荒诞派戏剧大师。男主自嘲：因为极度害怕抄袭导致的字斟句酌，他写出的小说干瘪扭曲，读起来就像“一个现代荒诞派大师去重写了一本枯燥的中世纪修女手册”，毫无人类感情与可读性可言。", category: "Richard Powers 深度全量词汇", context: "", example: "the thing read like a Samuel Beckett rewrite of the Ancrene Riwle." },
+{ word: "thrashing", base: "thrash", translation: "动词（现在分词）；剧烈挣扎、翻滚。【深意】在计算机科学中，\"thrashing\" 是一个专业术语（内存抖动），指系统过度频繁地交换内存导致性能急剧下降、死机前的状态。作者在这里把 AI（Imp B）处理不了成语时那种“卡壳、崩溃”的状态拟人化了。", category: "Richard Powers 深度全量词汇", context: "", example: "Thrashing, it tried a proverb we’d hammered into it the week before." },
+  { word: "proverb", base: "proverb", translation: "名词；谚语、格言。", category: "Richard Powers 深度全量词汇", context: "", example: "Thrashing, it tried a proverb we’d hammered into it the week before." },
+  { word: "stretched credibility", base: "stretch credibility", translation: "动词短语；延伸、拉伸可信度。固定用法，意思是“极度挑战可信度、让人难以置信”。", category: "Richard Powers 深度全量词汇", context: "", example: "It stretched credibility, but that sleepy hamlet with the two-dollar movie theater..." },
+  { word: "sleepy hamlet", base: "sleepy hamlet", translation: "名词短语；沉睡的/寂静的小村庄。hamlet 特指没有教堂的极小的村庄。", category: "Richard Powers 深度全量词汇", context: "", example: "...but that sleepy hamlet with the two-dollar movie theater and the free corn boil..." },
+  { word: "free corn boil", base: "free corn boil", translation: "名词短语；免费水煮玉米大会。美国中西部农业区（如小说原型伊利诺伊大学所在的香槟城）夏末传统的乡土社区活动。", category: "Richard Powers 深度全量词汇", context: "", example: "...and the free corn boil at summer’s end also sheltered a National Supercomputing Site." },
+  { word: "fallen through the earth’s crust", base: "fall through the earth’s crust", translation: "短语隐喻；仿佛掉穿了地壳。极度夸张的比喻，形容这个中西部农业小镇与世隔绝，像掉进了地壳之下的异次元，时间永远停留在1970年。", category: "Richard Powers 深度全量词汇", context: "", example: "The town, fallen through the earth’s crust into a dimension where nothing had changed since 1970..." },
+  { word: "pizza parlors", base: "pizza parlor", translation: "名词；披萨店。", category: "Richard Powers 深度全量词汇", context: "", example: "Four rival pizza parlors, each named “Papa” somebody..." },
+  { word: "fraternities", base: "fraternity", translation: "名词；（美国大学的）兄弟会。", category: "Richard Powers 深度全量词汇", context: "", example: "Bars where fraternities split Thursday-night twenty-five-cent plastic cups of beer." },
+  { word: "block-long", base: "block-long", translation: "形容词；长达一个街区那么长的（形容超级计算机占地面积巨大）。", category: "Richard Powers 深度全量词汇", context: "", example: "And the most advanced, block-long cybernetic wonderland..." },
+  { word: "cybernetic", base: "cybernetic", translation: "形容词；控制论的、计算机的、赛博的。", category: "Richard Powers 深度全量词汇", context: "", example: "And the most advanced, block-long cybernetic wonderland that a paranoid race to preserve faltering world dominance could fund." },
+  { word: "paranoid race", base: "paranoid race", translation: "名词短语；偏执的军备竞赛。【深度解析】这里有着最先进的、长达一个街区的赛博朋克仙境——这是美国政府为了在偏执的军备竞赛中，维护其摇摇欲坠的世界霸权，所能砸钱搞出来的产物。这是对美国冷战时期科技发展的顶级政治嘲讽。", category: "Richard Powers 深度全量词汇", context: "", example: "And the most advanced, block-long cybernetic wonderland that a paranoid race to preserve faltering world dominance could fund." },
+  { word: "faltering world dominance", base: "faltering world dominance", translation: "名词短语；摇摇欲坠的世界霸权。【深度解析】结合冷战背景，讽刺美国政府为了维护霸权而砸钱建设极其浪费的超算中心。", category: "Richard Powers 深度全量词汇", context: "", example: "And the most advanced, block-long cybernetic wonderland that a paranoid race to preserve faltering world dominance could fund." },
+  { word: "freshman comp", base: "freshman comp", translation: "名词短语；大一作文课（Freshman Composition 的缩写）。", category: "Richard Powers 深度全量词汇", context: "", example: "I imagined my network’s first freshman comp assignment..." },
+  { word: "whistle its answer in the dark", base: "whistle in the dark", translation: "短语隐喻；闭着眼睛都能干。【深度解析】原意是走夜路吹口哨壮胆，在这里引申为极其简单、闭着眼睛吹着口哨都能回答出来。Son of B 指代他们正在做的下一代AI网络模型。", category: "Richard Powers 深度全量词汇", context: "", example: "Son of B could whistle its answer to that one in the dark." },
+  { word: "come of age", base: "come of age", translation: "固定词组；成年、成熟、正式投入使用。", category: "Richard Powers 深度全量词汇", context: "", example: "The latest nationally funded supercomputer to come of age in U. had itself already lived through half a dozen incarnations." },
+  { word: "incarnations", base: "incarnation", translation: "名词；化身、前世、迭代版本。这台超级计算机之前已经演进更新过半打（6个）版本了。", category: "Richard Powers 深度全量词汇", context: "", example: "...had itself already lived through half a dozen incarnations." },
+  { word: "chained like galley slaves", base: "chained like galley slaves", translation: "短语隐喻；像划桨奴隶一样被锁链拴在一起。【深度解析】注意是 galley (古希腊罗马的桨帆战船)，不是 gallery。比喻这 65536 个处理器就像战船底舱里被铁链锁在一起的奴隶一样，被迫进行极其整齐、疯狂的“并行计算”。", category: "Richard Powers 深度全量词汇", context: "", example: "It was a collection of 65,536 separate computers, chained like galley slaves into inconceivable, smoothly functioning parallel." },
+  { word: "benchmark", base: "benchmark", translation: "名词；基准测试（计算机跑分软件）。", category: "Richard Powers 深度全量词汇", context: "", example: "Depending on the benchmark, the connection monster could outperform any computing assemblage on earth." },
+  { word: "assemblage", base: "assemblage", translation: "名词；集合体、装配物。这里指地球上任何其他的计算机集群组合。", category: "Richard Powers 深度全量词汇", context: "", example: "Depending on the benchmark, the connection monster could outperform any computing assemblage on earth." },
+  { word: "harness", base: "harness", translation: "动词；驾驭、控制（原指给马套上马具）。", category: "Richard Powers 深度全量词汇", context: "", example: "The machine was so powerful that no one could harness it." },
+  { word: "notoriously difficult", base: "notoriously difficult", translation: "形容词短语；出了名的反人类/困难。【深度解析】这是一个极具画面感的倒装句。“它的编程是出了名的反人类，以至于那些顶级科学家，都已经开始逃离这所大学，跑去性能只有十分之一、但至少人类还能驾驭的计算中心了。”", category: "Richard Powers 深度全量词汇", context: "", example: "So notoriously difficult was its programming that major scientists and their graduate-student franchises had already begun to flee U..." },
+  { word: "graduate-student franchises", base: "graduate-student franchise", translation: "名词短语；像加盟店一样的研究生团队。【深度解析】嘲讽教授把研究生当成低廉的加盟店劳动力一样批量使用和剥削。", category: "Richard Powers 深度全量词汇", context: "", example: "So notoriously difficult was its programming that major scientists and their graduate-student franchises had already begun to flee U..." },
+  { word: "humiliating your colleagues", base: "humiliate your colleagues", translation: "动词短语；羞辱你的同事。【深度解析】男主在劝阻伦茨：“搞定这台机器的难度，绝对大于你借此把同事们羞辱一番所能带来的快感。”意思是，为了装逼去碰这个硬茬，不划算。", category: "Richard Powers 深度全量词汇", context: "", example: "Harder than humiliating your colleagues can be worth." },
+  { word: "undertaking", base: "undertaking", translation: "名词；项目、事业、艰巨的任务。", category: "Richard Powers 深度全量词汇", context: "", example: "Besides, don’t forget the undertaking’s empirical interest." },
+  { word: "smoke and mirrors", base: "smoke and mirrors", translation: "习语；故弄玄虚、骗人的把戏。【深度解析】字面是“烟雾和镜子”（魔术师变戏法的道具）。意思就是：“这玩意儿纯粹是故弄玄虚。”", category: "Richard Powers 深度全量词汇", context: "", example: "This thing is all smoke and mirrors. And you know it." },
+  { word: "hard pressed to salvage", base: "hard pressed to salvage", translation: "动词短语；竭力挽救、为了拯救...而焦头烂额。【深度解析】到了那个时候，这台巨型超级计算机的管理员们，为了不让昂贵的硬件因为无人问津而吃灰（拯救被冷落的机器），已经到了饥不择食的地步。", category: "Richard Powers 深度全量词汇", context: "", example: "By that time, the keepers of the connection monster were so hard pressed to salvage their hardware from neglect that they were taking all comers." },
+  { word: "taking all comers", base: "take all comers", translation: "习语；来者不拒。形容超算管理员饥不择食，无论什么人申请使用机器他们都同意。", category: "Richard Powers 深度全量词汇", context: "", example: "By that time, the keepers of the connection monster were so hard pressed to salvage their hardware from neglect that they were taking all comers." },
+  { word: "churn", base: "churn", translation: "动词；剧烈搅动、翻滚。这里形容神经网络在没有任何外部输入的情况下，内部层级之间还在不断交互、翻腾、自我重组。", category: "Richard Powers 深度全量词汇", context: "", example: "The net of networks would churn at all times, not simply responding passively to new data inputs." },
+  { word: "Keep out of my hair", base: "keep out of my hair", translation: "口语俚语；别来烦我、别碍我的事。伦茨嫌男主碍事，让他滚远点。", category: "Richard Powers 深度全量词汇", context: "", example: "Keep out of my hair for a few weeks, Marcel." },
+  { word: "copy", base: "copy", translation: "名词；在这里指出版业的“手稿、文稿”。", category: "Richard Powers 深度全量词汇", context: "", example: "The order suited me. I had copy to proofread." },
+  { word: "proofread", base: "proofread", translation: "动词；校对（挑错别字和排版错误）。", category: "Richard Powers 深度全量词汇", context: "", example: "The order suited me. I had copy to proofread." },
+  { word: "freeloading", base: "freeloading", translation: "形容词；白嫖的、蹭吃蹭喝的。男主觉得自己拿薪水却干不出活，像个混吃等死的寄生虫。", category: "Richard Powers 深度全量词汇", context: "", example: "I’d also agreed to a number of classroom visits, hoping to justify my freeloading existence." },
+  { word: "circled like Conestogas under attack", base: "circle like Conestogas under attack", translation: "短语隐喻；像遇到袭击的西部大马车一样围成一圈。【深度解析】画面感极强！Conestogas 指的是美国西部拓荒时代那种巨大的有篷马车。当年遇到印第安人袭击，会把马车围成一圈防御。这里形容学生们极其害怕和抗拒男主这个作家，课桌排成一圈，充满了防备的姿态。", category: "Richard Powers 深度全量词汇", context: "", example: "Students sat polite but stunned in front of me, their desks circled like Conestogas under attack." },
+  { word: "methodical", base: "methodical", translation: "形容词；机械般有条理的。形容他麻木地修改稿子。", category: "Richard Powers 深度全量词汇", context: "", example: "I went through one methodical ruler-line of text after the other..." },
+  { word: "ruler-line", base: "ruler-line", translation: "形容词；像用直尺画的一样刻板的。", category: "Richard Powers 深度全量词汇", context: "", example: "I went through one methodical ruler-line of text after the other..." },
+  { word: "Primary Visual Area", base: "Primary Visual Area", translation: "名词短语；初级视觉区。【深度解析】作者用极其硬核的神经解剖学词汇来代替普通表达。意思就是：老子看自己的烂稿子看到“大脑后部的视觉神经出血/看吐了”。", category: "Richard Powers 深度全量词汇", context: "", example: "...until the Primary Visual Area back in my occipital lobe started to bleed." },
+  { word: "occipital lobe", base: "occipital lobe", translation: "名词短语；枕叶（大脑后部负责视觉的区域）。", category: "Richard Powers 深度全量词汇", context: "", example: "...until the Primary Visual Area back in my occipital lobe started to bleed." },
+  { word: "perched on the brink of nervous disintegration", base: "perch on the brink of nervous disintegration", translation: "短语隐喻；游走在精神崩溃（神经衰弱）的边缘。", category: "Richard Powers 深度全量词汇", context: "", example: "The book’s style perched on the brink of nervous disintegration, the most depressing fairy tale I’d ever read." },
+  { word: "sitting on", base: "sit on", translation: "动词短语；压着、扣留。这里指编辑压着他的稿子、扣留着这份未完成的合同，苦苦等他交货。", category: "Richard Powers 深度全量词汇", context: "", example: "And the only person more depressed than I was my editor, sitting on my unfulfilled contract." },
+  { word: "resident surgeon", base: "resident surgeon", translation: "名词短语；住院外科医生。这是男主小说里的主人公职业。", category: "Richard Powers 深度全量词汇", context: "", example: "I knew the narration meant to be double-voiced with my protagonist, a resident surgeon living an extended mental breakdown." },
+  { word: "vignettes", base: "vignette", translation: "名词；短小的插曲、速写、片段。", category: "Richard Powers 深度全量词汇", context: "", example: "hopelessly tame compared to those vignettes shoring up the hourly news." },
+  { word: "shoring up", base: "shore up", translation: "动词短语；支撑、加固。那些社会崩溃的惨剧片段，充斥并支撑起了每天滚动播放的新闻节目。", category: "Richard Powers 深度全量词汇", context: "", example: "hopelessly tame compared to those vignettes shoring up the hourly news." },
+  { word: "semblance", base: "semblance", translation: "名词；假象、勉强拼凑的样子。", category: "Richard Powers 深度全量词汇", context: "", example: "The second I spent improvising, in the margins of the last pages, some semblance of redemptive ending." },
+  { word: "redemptive", base: "redemptive", translation: "形容词；救赎的。", category: "Richard Powers 深度全量词汇", context: "", example: "some semblance of redemptive ending." },
+  { word: "descent", base: "descent", translation: "名词；下沉、堕落。他试图在书页边缘拼凑出一种勉强带有“救赎”意味的结局，划掉了原本一路走向毁灭的结局。", category: "Richard Powers 深度全量词汇", context: "", example: "I scratched out the manuscript’s final descent." },
+  { word: "postscript", base: "postscript", translation: "名词；后记、附言。", category: "Richard Powers 深度全量词汇", context: "", example: "I added a last-minute postscript that returned the tale to the light of its source..." },
+  { word: "untouched by tragedy", base: "untouched by tragedy", translation: "短语；未被悲剧伤害/触及的。【深度解析】男主在强行修改悲惨的结局。这段后记将整个故事拉回了它的光源——即‘读者’所在的现实世界，让读者感觉自己并没有被这股悲剧的力量所伤害。", category: "Richard Powers 深度全量词汇", context: "", example: "I added a last-minute postscript that returned the tale to the light of its source, the reader, untouched by tragedy." },
+  { word: "pupils", base: "pupil", translation: "名词；瞳孔。", category: "Richard Powers 深度全量词汇", context: "", example: "And yet the story still radiated a darkness so wide my pupils could not attenuate." },
+  { word: "attenuate", base: "attenuate", translation: "动词；减弱、缩小。故事里的黑暗太深邃了，连他自己的瞳孔都无法缩小/减弱这种光线带来的痛苦感。", category: "Richard Powers 深度全量词汇", context: "", example: "And yet the story still radiated a darkness so wide my pupils could not attenuate." },
+  { word: "triage", base: "triage", translation: "名词；（急诊室里的）伤员伤情分类/紧急抢救。比喻他在最后一刻（十一小时）对濒死的小说进行绝望的抢救。", category: "Richard Powers 深度全量词汇", context: "", example: "My eleventh-hour triage demoralized me even more than the first writing." },
+  { word: "demoralized", base: "demoralize", translation: "形容词；使人意志消沉的、士气低落的。", category: "Richard Powers 深度全量词汇", context: "", example: "My eleventh-hour triage demoralized me even more than the first writing." },
+  { word: "teller", base: "teller", translation: "名词；讲述者、作家。", category: "Richard Powers 深度全量词汇", context: "", example: "I felt a despair I had not felt while still the teller." },
+  { word: "happy accident", base: "happy accident", translation: "短语；意外的走运。【深度解析】“这并不是为了我的职业生涯感到绝望，因为我的写作生涯本来就只不过是一场‘意外的走运’而已。”让他绝望的是发现自己内心已经彻底空心化了。", category: "Richard Powers 深度全量词汇", context: "", example: "Not a despair for my career, which had never been more than a happy accident." },
+  { word: "deformity", base: "deformity", translation: "名词；畸形物、怪胎（指被他乱改一通的小说）。", category: "Richard Powers 深度全量词汇", context: "", example: "I no longer had the heart to send out so bleak a deformity into the world." },
+  { word: "short spurts", base: "short spurts", translation: "短语；一阵一阵地、短促地发力。", category: "Richard Powers 深度全量词汇", context: "", example: "I worked in short spurts, all I had the strength for..." },
+  { word: "surgically reinserting the no", base: "surgically reinsert the no", translation: "神级隐喻；像做外科手术一样，给小说重新植入那个‘不’字。【深度解析】“这正是身处战乱冲突区（disputed zone）的孩子们，如果想要逃出生天，就必须拥有的拒绝苦难的意志。” 他试图在虚无的小说里强行塞入一点点希望和反抗。", category: "Richard Powers 深度全量词汇", context: "", example: "...surgically reinserting the no that children in the disputed zone need if they are to escape to daylight." },
+  { word: "stand", base: "stand", translation: "动词；站起来。", category: "Richard Powers 深度全量词汇", context: "", example: "I’d hack at my story for half an hour, stand, stretch..." },
+  { word: "stretch", base: "stretch", translation: "动词；伸懒腰。", category: "Richard Powers 深度全量词汇", context: "", example: "I’d hack at my story for half an hour, stand, stretch..." },
+  { word: "purely symbolic fireplace", base: "purely symbolic fireplace", translation: "名词短语；纯粹象征性的壁炉。【深度解析】这间破旧的大楼办公室里根本没有真正的壁炉。他不仅身体冷，“想象力”更是彻底冻僵了。他只能靠“想象”那里有一团火来强行提供心理安慰。这是对作家灵感枯竭最心酸的自嘲。", category: "Richard Powers 深度全量词汇", context: "", example: "...warm my imagination by the purely symbolic fireplace..." },
+  { word: "nihilist", base: "nihilist", translation: "形容词；虚无主义的。", category: "Richard Powers 深度全量词汇", context: "", example: "...then sit back and try to cure the next nihilist paragraph." },
+  { word: "plank", base: "plank", translation: "名词；木板。", category: "Richard Powers 深度全量词汇", context: "", example: "The plank floorboards creaked even before I stepped on them." },
+  { word: "creaked", base: "creak", translation: "动词；嘎吱作响。", category: "Richard Powers 深度全量词汇", context: "", example: "The plank floorboards creaked even before I stepped on them." },
+  { word: "die at the desks of their bank vice presidencies", base: "die at the desks of their bank vice presidencies", translation: "短语隐喻；死在银行副总裁的办公桌前。【深度解析】人文学科对资本主义异化的终极嘲笑。“这些地板下陷是因为曾承受了一代又一代学霸本科生们的重量。而这些当年的学子，后来都在‘银行副总裁’的办公桌前度过了劳碌至死的一生。”曾经的学术理想死在了华尔街。", category: "Richard Powers 深度全量词汇", context: "", example: "They settled under the weight of generations of scholar undergraduates who had gone on to die at the desks of their bank vice presidencies." },
+  { word: "ammonia", base: "ammonia", translation: "名词；氨水。", category: "Richard Powers 深度全量词汇", context: "", example: "The passages smelled of gum and hair oil, ammonia, gargle..." },
+  { word: "gargle", base: "gargle", translation: "名词；漱口水。", category: "Richard Powers 深度全量词汇", context: "", example: "The passages smelled of gum and hair oil, ammonia, gargle..." },
+  { word: "shellac", base: "shellac", translation: "名词；虫胶清漆（涂在地板上的）。", category: "Richard Powers 深度全量词汇", context: "", example: "damp fiber, wax, shellac..." },
+  { word: "when chemistry was still a liberal art", base: "when chemistry was still a liberal art", translation: "短语隐喻；当化学还是一门人文学科的时候。【深度解析】大楼里闻起来有一股来自于“化学还被算作一门人文学科/文科”那个年代的化学药剂味。夸张地形容这栋人文大楼极其古老，仿佛停留在科学与哲学还未分家的自然哲学时代。", category: "Richard Powers 深度全量词汇", context: "", example: "...chemicals from the days when chemistry was still a liberal art." },
+  { word: "steam pipes", base: "steam pipe", translation: "名词；蒸汽供暖管道。", category: "Richard Powers 深度全量词汇", context: "", example: "Even the steam pipes reeked a Georgian, paint-peeling grace." },
+  { word: "reeked", base: "reek", translation: "动词；散发出浓烈气味。", category: "Richard Powers 深度全量词汇", context: "", example: "Even the steam pipes reeked a Georgian, paint-peeling grace." },
+  { word: "grace", base: "grace", translation: "名词；优雅。", category: "Richard Powers 深度全量词汇", context: "", example: "Even the steam pipes reeked a Georgian, paint-peeling grace." },
+  { word: "Georgian", base: "Georgian", translation: "名词/形容词；乔治亚风格。【深度解析】指18世纪英国古典建筑风格，后来成了美国古老大学校园最标志性的建筑风格。作者用这个建筑风格隐喻整个“传统人文学科/文科”的现状——曾经有着古典的优雅和辉煌的底蕴，但现在已经衰败破旧、油漆剥落（paint-peeling），只剩下一副散发着陈腐气味的空壳了。", category: "Richard Powers 深度全量词汇", context: "", example: "The steam pipes reeked a Georgian, paint-peeling grace." },
+  { word: "incandescent", base: "incandescent", translation: "形容词；昏黄的、白炽的。", category: "Richard Powers 深度全量词汇", context: "", example: "In the incandescent dusk, the building gave no hint of the internationalist polemics..." },
+  { word: "internationalist polemics", base: "internationalist polemics", translation: "名词短语；国际主义者的学术论战。【深度解析】全段最难的学术批判黑话之一。指当时大学文科里流行的激进后现代批判理论。", category: "Richard Powers 深度全量词汇", context: "", example: "the building gave no hint of the internationalist polemics just now attempting last-ditch CPR..." },
+  { word: "last-ditch CPR", base: "last-ditch CPR", translation: "名词短语；最后一搏的心肺复苏（急救）。", category: "Richard Powers 深度全量词汇", context: "", example: "...attempting last-ditch CPR on a discipline choked to death by curatorial gentility." },
+  { word: "curatorial gentility", base: "curatorial gentility", translation: "名词短语；像博物馆策展人一样的附庸风雅和迂腐礼仪。【深度解析】“在这栋古老的建筑内部，那些激进的学术论战正在上演——他们正在拼命试图对人文学科进行最后的‘心肺复苏’，因为这个学科早就被过去那种博物馆策展人般的、迂腐做作的精英高雅做派给活活掐死了。”（嘲讽文科已经没落，新派旧派吵成一团）。", category: "Richard Powers 深度全量词汇", context: "", example: "...choked to death by curatorial gentility." },
+  { word: "overdue", base: "overdue", translation: "形容词；逾期的、迟交的。", category: "Richard Powers 深度全量词汇", context: "", example: "My corrections were overdue." },
+  { word: "stem", base: "stem", translation: "动词；阻止、遏制（阻挡结局）。", category: "Richard Powers 深度全量词汇", context: "", example: "My surgeon’s fight against child genocide had become mine, and like him, I was failing to stem the end." },
+  { word: "decompressed", base: "decompress", translation: "动词；减压。【深度解析】此处使用了潜水病隐喻。连续修改小说后猛地推开门走到走廊上，“由于精神减压太快，我得潜水病（头晕目眩）了。”", category: "Richard Powers 深度全量词汇", context: "", example: "But I decompressed too quickly, giving myself the bends." },
+  { word: "the bends", base: "the bends", translation: "名词；减压病/潜水病（潜水员上浮太快导致血液冒泡的痛苦症状）。", category: "Richard Powers 深度全量词汇", context: "", example: "But I decompressed too quickly, giving myself the bends." },
+  { word: "overcome", base: "overcome", translation: "形容词（分词形式）；被压垮的、瘫软的。【深度解析】“眼前这熟悉的乔治亚建筑风格也随之萎缩，仿佛这栋楼也像我刚做完文本急救的手稿一样，彻底瘫软被压垮了。”", category: "Richard Powers 深度全量词汇", context: "", example: "The Georgian familiarity shrank in front of me, as overcome as the text I’d just been giving intensive care." },
+  { word: "hack", base: "hack", translation: "动词；粗暴地乱砍、劈、乱剁。【深度解析】形容修改小说的动作。普通作家修改文章叫 edit/revise，但他用 hack。说明他此刻对自己的文字充满厌恶和绝望，他不是在雕琢艺术品，而像个屠夫一样，拿着斧头在残忍、麻木地“砍掉、肢解”自己写出的一堆烂字。", category: "Richard Powers 深度全量词汇", context: "", example: "I’d hack at my story for half an hour, stand, stretch..." },
+  { word: "cure the next nihilist paragraph", base: "cure the next nihilist paragraph", translation: "动词短语；试图治愈下一个虚无主义的段落。【深度解析】呼应了前文里的“外科医生”和“病危急救（CPR）”的比喻。他写的文字充满了毫无希望的“虚无主义（nihilist）”，就像得了绝症的病人。他只能坐下来，像个绝望的医生一样，试图去“治愈（cure）”这些散发着死气的段落。", category: "Richard Powers 深度全量词汇", context: "", example: "...then sit back and try to cure the next nihilist paragraph." },
+{ word: "whip-thin", base: "whip-thin", translation: "形容词；像鞭子一样细长。【深度解析】极言女孩的身材极其瘦削。", category: "Richard Powers 深度全量词汇", context: "", example: "A whip-thin lamia in a pageboy haircut, absurdly young..." },
+  { word: "lamia", base: "lamia", translation: "名词；拉米亚（希腊神话中会吸血的半人半蛇女怪）。【深度解析】作者用这个词来形容女孩，赋予了她一种危险、致命又带有异域色彩的诱惑力。", category: "Richard Powers 深度全量词汇", context: "", example: "A whip-thin lamia in a pageboy haircut, absurdly young..." },
+  { word: "pageboy", base: "pageboy", translation: "名词；经典的“童花头 / 侍童头”。【深度解析】一种齐肩、发尾向内扣的复古短发造型。", category: "Richard Powers 深度全量词汇", context: "", example: "A whip-thin lamia in a pageboy haircut, absurdly young..." },
+  { word: "cling", base: "cling", translation: "名词；紧身衣（由动词“紧贴”转化而来）。【深度解析】她穿着“无袖的橙色纯棉紧身衣”。", category: "Richard Powers 深度全量词汇", context: "", example: "...in blue jeans and sleeveless orange cotton cling, despite the irreversible autumn." },
+  { word: "rapt", base: "rapt", translation: "形容词；全神贯注的、入迷的。【深度解析】Something held her rapt 意为“有什么东西让她看得入了迷”。", category: "Richard Powers 深度全量词汇", context: "", example: "Something held her rapt: the corkboard, smothered in announcements." },
+  { word: "corkboard", base: "corkboard", translation: "名词；软木布告板。", category: "Richard Powers 深度全量词汇", context: "", example: "Something held her rapt: the corkboard, smothered in announcements." },
+  { word: "smothered", base: "smother", translation: "形容词/动词分词；被淹没、被覆盖到令人窒息。【深度解析】原意是捂死、使窒息，这里画面感极强：形容那块布告板上密密麻麻的传单、海报多到让布告板“窒息”。", category: "Richard Powers 深度全量词汇", context: "", example: "Something held her rapt: the corkboard, smothered in announcements." },
+  { word: "beat a path", base: "beat a path", translation: "动词短语；匆匆开辟一条路、赶紧离开。【深度解析】男主觉得自己像个偷窥者，想悄无声息地原路逃回办公室。", category: "Richard Powers 深度全量词汇", context: "", example: "I tried to beat a path back to my office without startling her." },
+  { word: "a gaze in profile", base: "a gaze in profile", translation: "名词短语；侧脸的凝视。【深度解析】（profile 是人的侧面轮廓）。她转过头，用侧脸惊恐又茫然地看了男主最后一眼。", category: "Richard Powers 深度全量词汇", context: "", example: "...the image of slender pageboy—a pair of bare shoulders, a gaze in profile down a fading hallway..." },
+  { word: "prosodic", base: "prosodic", translation: "形容词；韵律学的、诗体格律的。【深度解析】男主认为，如果去了解她的真实生活，她本身就是一个充满“诗歌韵律感与厚重感”的真实存在，而不是他刚才意淫出的单薄幻影。", category: "Richard Powers 深度全量词汇", context: "", example: "She would carry prosodic weight to her—plans, a past..." },
+  { word: "brayed", base: "bray", translation: "动词；像驴一样刺耳地大叫、粗鲁地大笑。【深度解析】男主在脑补她现实中可能根本不神秘，甚至说话声音很大很粗鲁。", category: "Richard Powers 深度全量词汇", context: "", example: "Doubtless, she brayed when she talked..." },
+  { word: "slaughtered her checking account", base: "slaughter one's checking account", translation: "动词短语；屠杀了她的支票账户。【深度解析】极其生动的美式夸张表达！意思是她大概也是个普通的穷学生，花钱大手大脚，把银行卡里的钱挥霍一空、刷爆了卡。", category: "Richard Powers 深度全量词汇", context: "", example: "...she brayed when she talked, slaughtered her checking account..." },
+  { word: "render literate", base: "render literate", translation: "动词短语；使……有文化 / 使……具备读写能力。【深度解析】男主脑补她作为苦逼的研究生助教，不得不像填鸭一样“强行教那些句子都写不通的大一新生认字写文章”。", category: "Richard Powers 深度全量词汇", context: "", example: "...complained about the freshmen she had to render literate..." },
+  { word: "glowed", base: "glow", translation: "动词；容光焕发、极其兴奋。【深度解析】这里形容科学家 Lentz 兴奋得连电话里的声音都在“发光/发烫”。", category: "Richard Powers 深度全量词汇", context: "", example: "...almost glowed over the phone. “We’ve knocked it, Marcel. Pulled it off.”" },
+  { word: "shuffling", base: "shuffle", translation: "形容词/动词分词；拖着脚走路的。【深度解析】形容科学界目前的还原论（reductionism）只能迈出“步履蹒跚的婴儿步伐（baby steps）”。", category: "Richard Powers 深度全量词汇", context: "", example: "They only put up with those shuffling baby steps in the hopes that they’ll run someday." },
+  { word: "iambs", base: "iamb", translation: "名词；抑扬格（诗歌的一种基本格律）。【深度解析】因为 Lentz 前面用了一个很文学的词“soar（翱翔）”，男主不耐烦地打断他：“行了，工程师，别搁这儿作诗 / 别拽文了（Enough iambs），直接告诉我咱们到底搞出了什么。”", category: "Richard Powers 深度全量词汇", context: "", example: "Okay, Engineer. Enough iambs. Tell me what we’ve done." },
+  { word: "idea tokens", base: "idea token", translation: "名词短语；概念符号 / 思想令牌。【深度解析】AI 术语，指在机器中代表某个概念的基本数据单元。", category: "Richard Powers 深度全量词汇", context: "", example: "B’s problem was that it could manipulate idea tokens, but not ideas about those tokens. Right?" },
+  { word: "second-order shifts", base: "second-order shift", translation: "名词短语；二阶转变 / 自我反思。【深度解析】指代一种套娃式的自我审视结构，即系统不仅能处理数据，还能建立一个“正在处理数据的自己”的模型。这是关于意识诞生的硬核探讨。", category: "Richard Powers 深度全量词汇", context: "", example: "We need a beast that can make second-order shifts. One capable of reflection." },
+  { word: "circuitry", base: "circuitry", translation: "名词；电路系统、硬件。【深度解析】男主反击：“我才是负责人文的，你只是个搞电路的（in charge of the circuitry）。”", category: "Richard Powers 深度全量词汇", context: "", example: "Wait a minute. Back off. I’m the humanist here, remember? You're just in charge of the circuitry." },
+  { word: "junker", base: "junker", translation: "名词；快报废的破烂机器。", category: "Richard Powers 深度全量词汇", context: "", example: "Our gate was still the same junker terminal, the same jumble of antique I/O." }
+];
+
+  let currentIndex = 0;
+  let cardOrder = [];
+
+  function init() {
+      renderTable();
+      setMode('sequential'); 
+      document.getElementById('totalCards').innerText = vocabularyDB.length;
+  }
+
+  function switchTab(tabId) {
+      document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+  }
+
+  function renderTable() {
+      const container = document.getElementById('table-container');
+      let html = '<table>';
+      
+      vocabularyDB.forEach((item, index) => {
+          const baseHtml = item.base ? `<br><span class="base-verb">${item.base}</span>` : '';
+          html += `
+              <tr>
+                  <td class="num-col">${index + 1}.</td>
+                  <td class="word-col">${item.word}${baseHtml}</td>
+                  <td class="meaning-col">
+                      <strong>${item.translation}</strong>
+                      <p class="context">${item.context}</p>
+                      <p class="example">"${item.example}"</p>
+                  </td>
+              </tr>
+          `;
+      });
+      html += '</table>';
+      container.innerHTML = html;
+  }
+
+  function setMode(mode) {
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      
+      if (mode === 'random') {
+          document.getElementById('mode-rnd').classList.add('active');
+          cardOrder = Array.from({length: vocabularyDB.length}, (_, i) => i);
+          for (let i = cardOrder.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [cardOrder[i], cardOrder[j]] = [cardOrder[j], cardOrder[i]];
+          }
+      } else {
+          document.getElementById('mode-seq').classList.add('active');
+          cardOrder = Array.from({length: vocabularyDB.length}, (_, i) => i);
+      }
+      
+      currentIndex = 0;
+      
+      const card = document.getElementById('flashcardElement');
+      if (card.classList.contains('is-flipped')) {
+          card.classList.remove('is-flipped');
+          setTimeout(() => updateCard(), 300);
+      } else {
+          updateCard();
+      }
+  }
+
+  function updateCard() {
+      const realIndex = cardOrder[currentIndex];
+      const item = vocabularyDB[realIndex];
+      
+      document.getElementById('fc-word').textContent = item.word;
+      
+      const baseNote = document.getElementById('fc-base');
+      if(item.base) {
+          baseNote.textContent = item.base;
+          baseNote.style.display = 'inline-block';
+      } else {
+          baseNote.style.display = 'none';
+      }
+
+      document.getElementById('fc-translation').textContent = item.translation;
+      document.getElementById('fc-context').textContent = item.context;
+      document.getElementById('fc-example').textContent = `"${item.example}"`;
+      document.getElementById('cardCount').textContent = currentIndex + 1;
+      
+      document.getElementById('flashcardElement').classList.remove('is-flipped');
+  }
+
+  function flipCard() {
+      document.getElementById('flashcardElement').classList.toggle('is-flipped');
+  }
+
+  function nextCard() {
+      const card = document.getElementById('flashcardElement');
+      if(card.classList.contains('is-flipped')) {
+          card.classList.remove('is-flipped');
+          setTimeout(() => {
+              currentIndex = (currentIndex + 1) % vocabularyDB.length;
+              updateCard();
+          }, 300);
+      } else {
+          currentIndex = (currentIndex + 1) % vocabularyDB.length;
+          updateCard();
+      }
+  }
+
+  function prevCard() {
+      const card = document.getElementById('flashcardElement');
+      if(card.classList.contains('is-flipped')) {
+          card.classList.remove('is-flipped');
+          setTimeout(() => {
+              currentIndex = (currentIndex - 1 + vocabularyDB.length) % vocabularyDB.length;
+              updateCard();
+          }, 300);
+      } else {
+          currentIndex = (currentIndex - 1 + vocabularyDB.length) % vocabularyDB.length;
+          updateCard();
+      }
+  }
+
+  function playAudio(event) {
+      event.stopPropagation();
+      const realIndex = cardOrder[currentIndex];
+      const isFlipped = document.getElementById('flashcardElement').classList.contains('is-flipped');
+      let textToSpeak = "";
+      
+      if(isFlipped) {
+          textToSpeak = vocabularyDB[realIndex].example;
+      } else {
+          textToSpeak = vocabularyDB[realIndex].word.replace(/\([^)]*\)/g, '').trim(); 
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'en-US'; 
+      utterance.rate = 0.85; 
+      window.speechSynthesis.speak(utterance);
+  }
+
+  window.onload = init;
+</script>
+</body>
+</html>
