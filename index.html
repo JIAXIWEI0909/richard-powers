@@ -162,12 +162,12 @@
   }
 
   /* =========================================
-     --- FLASHCARDS CSS (彻底重构修复版) --- 
+     --- FLASHCARDS CSS (终极排版修复版) --- 
      ========================================= */
   .flashcard-scene {
     width: 100%;
     max-width: 750px;
-    height: 480px;
+    height: 480px; /* 足够的高度 */
     margin: 20px auto;
     perspective: 1500px;
     cursor: pointer;
@@ -179,40 +179,40 @@
     position: relative;
     transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
     transform-style: preserve-3d;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   }
 
   .flashcard.is-flipped {
     transform: rotateY(180deg);
   }
 
-  /* 通用面：去掉了害人的 overflow: hidden 修复了白板 bug */
+  /* ！！！白屏的克星：加上 top: 0 和 left: 0 ！！！ */
   .card-face {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: 4px solid transparent;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   }
 
-  /* 正面专属样式 */
+  /* --- 正面：白色卡片 + 橙色粗边框，文字绝对居中 --- */
   .card-front {
     background: var(--card);
+    border: 4px solid var(--accent2); /* 加上颜色边框，非常有质感 */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 40px;
-    text-align: center;
+    text-align: center; /* 确保文字居中 */
+    transform: rotateY(0deg); 
   }
 
-  /* ✅ 恢复正面被我不小心删掉的文字排版！ */
   .card-front h2 {
-    font-size: 2.8rem;
+    font-size: 3rem;
     color: #e65100;
     margin: 0 0 10px 0;
     font-family: 'Nunito', sans-serif;
@@ -220,41 +220,68 @@
   }
   
   .fc-hint {
-    font-size: 14px;
+    font-size: 1.1rem;
     color: #999;
     margin-top: 15px;
     font-style: italic;
   }
 
-  /* 背面专属样式：使用真正的解药排版 */
+  /* --- 背面：深橙色背景，文字上下滑动不压缩 --- */
   .card-back {
     background: var(--flip-bg);
     color: white;
     transform: rotateY(180deg);
-    border-color: #d35400;
+    border: 4px solid #d35400;
     
-    /* 采用 Flex 布局以支持自动贴底，同时开启滚动 */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 30px 25px;
-    overflow-y: auto;
+    align-items: center; /* 【文字横向完美居中】 */
+    padding: 40px 30px;
+    overflow-y: auto; /* 开启滚动条 */
   }
 
-  /* 核心修复：彻底解决 Flex 布局下文本被压缩的问题 */
+  /* 阻止内容被压缩 */
   .card-back > * {
     flex-shrink: 0; 
   }
 
-  /* ✅ 恢复背面标题样式！ */
+  /* 背面标题居中 */
   .card-back h3 {
     margin-top: 0;
     color: #FFD8A8;
-    font-size: 1.8rem;
-    margin-bottom: 15px;
+    font-size: 2rem;
+    margin-bottom: 20px;
     font-weight: 900;
     font-family: 'Nunito', sans-serif;
+    text-align: center; /* 【居中】 */
+  }
+
+  /* 深度解析：居中且间距舒服 */
+  .card-back p.fc-context {
+    font-size: 1.15rem; 
+    line-height: 1.7;   
+    color: white;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 25px;
+    width: 100%;
+    text-align: center; /* 【居中】 */
+  }
+
+  /* 例句：推到底部，稍微靠左对齐方便阅读（或者你也喜欢居中，我设为整体饱满居中） */
+  .card-back p.fc-example {
+    font-size: 1.05rem;    
+    line-height: 1.6;
+    color: #FFF0D4;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 4px solid #FFD8A8;
+    width: 100%;
+    text-align: left; 
+    margin-top: auto; /* 【自动推到卡片最底部】 */
+    margin-bottom: 10px;
   }
 
   /* 滚动条美化 */
@@ -271,32 +298,6 @@
   }
   .card-back::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.7); 
-  }
-
-  /* 背面：深度解析文字排版 */
-  .card-back p.fc-context {
-    font-size: 1.05rem; 
-    line-height: 1.7;   
-    color: white;
-    font-weight: 500;
-    margin-top: 0;
-    margin-bottom: 20px;
-    width: 100%;
-  }
-
-  /* 背面：例句排版 */
-  .card-back p.fc-example {
-    font-size: 1rem;    
-    line-height: 1.5;
-    color: #FFF0D4;
-    font-style: italic;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 15px;
-    border-radius: 10px;
-    border-left: 4px solid #FFD8A8;
-    width: 100%;
-    margin-top: auto; /* Flex 下生效，完美将例句推到卡片底部 */
-    margin-bottom: 10px; /* 底部留足空间 */
   }
 
   /* 控制按钮区域 */
